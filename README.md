@@ -1,2 +1,4 @@
 # Team-6
  Team 6's group project GitHub repository for MGT 6203 (Edx) Summer of 2023 semester.
+
+"Joshua Farina is a dedicated data analyst with a passion for continuous learning and the application of cutting-edge tools and techniques. As a creative problem solver, he excels at identifying technical solutions to complex challenges. In his role as a supervisory data analyst, Joshua goes the extra mile by taking a special interest in the growth and development of junior staff, mentoring them and providing guidance to help them reach their full potential. Beyond his work, Joshua enjoys staying active in the data science community and exploring new ways to leverage data for positive change."
