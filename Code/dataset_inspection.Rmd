@@ -1,5 +1,5 @@
 ```{r}
-install.packages("purrr")
+#install.packages("purrr")
 ```
 
 ```{r}
@@ -7,10 +7,25 @@ library(purrr)
 library(readxl)
 library(tidyverse)
 library(stringr)
-k.aps <- read.csv("Data/kaggle_aps/train.csv")
-m.aps <- read_xlsx("Data/mendeley_aps/ACSI Data 2015.xlsx")
-k.rts <- read.csv("Data/kaggle_flight_routes/routes_clean.csv")
+library(car)
+
+k.aps <- read.csv("../Data/kaggle_aps/train.csv", header = T, stringsAsFactors = F, row.names = "X")
+m.aps <- read_xlsx("../Data/mendeley_aps/ACSI Data 2015.xlsx", col_names = T, )
+k.rts <- read.csv("../Data/kaggle_flight_routes/routes_clean.csv",header = T, stringsAsFactors = T)
 ```
+```{r}
+# Simple Preview
+
+head(k.aps, 10)
+```
+```{r}
+summary(k.aps)
+```
+```{r}
+str(k.aps)
+```
+
+
 ```{r}
 k.aps %>% select(where(is.character) )%>% 
     map(~str_c(unique(.x),collapse = ",")) %>% 
@@ -19,4 +34,31 @@ k.aps %>% select(where(is.character) )%>%
     
 
 ```
+```{r}
+#k.aps["satisfaction"] <- ifelse(k.aps["satisfaction"]=="satisfied", 1, 0)
+
+k.aps.clean = k.aps %>% mutate(Gender=factor(Gender),
+                         Customer.Type=factor(Customer.Type),
+                         Type.of.Travel=factor(Type.of.Travel),
+                         Class=factor(Class),
+                         satisfaction=factor(satisfaction),) %>% 
+                  select(!id)
+k.aps.clean
+
+summary(glm(satisfaction~., "binomial", k.aps.clean))
+```
+```{r}
+train.n <- (round(0.7 * length(k.aps.clean$Gender)))
+indices <- sample(seq(1, length(k.aps.clean$Gender
+                                )), train.n)
+train <- k.aps.clean[indices,]
+validate <-k.aps.clean[-indices,]
+train
+validate
+```
+```{r}
+m <- (glm(satisfaction~., "binomial", train))
+summary(m)
+```
+
 
