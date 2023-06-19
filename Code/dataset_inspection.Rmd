@@ -1,0 +1,22 @@
+```{r}
+install.packages("purrr")
+```
+
+```{r}
+library(purrr)
+library(readxl)
+library(tidyverse)
+library(stringr)
+k.aps <- read.csv("Data/kaggle_aps/train.csv")
+m.aps <- read_xlsx("Data/mendeley_aps/ACSI Data 2015.xlsx")
+k.rts <- read.csv("Data/kaggle_flight_routes/routes_clean.csv")
+```
+```{r}
+k.aps %>% select(where(is.character) )%>% 
+    map(~str_c(unique(.x),collapse = ",")) %>% 
+    bind_rows() %>% 
+    gather(key = col_name, value = col_unique)
+    
+
+```
+
