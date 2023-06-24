@@ -10,8 +10,8 @@ library(stringr)
 library(car)
 
 k.aps <- read.csv("../Data/kaggle_aps/train.csv", header = T, stringsAsFactors = F, row.names = "X")
-m.aps <- read_xlsx("../Data/mendeley_aps/ACSI_Data_2015.xlsx", col_names = T, )
-k.rts <- read.csv("../Data/kaggle_flight_routes/routes_clean.csv",header = T, stringsAsFactors = T)
+
+
 ```
 ```{r}
 # Simple Preview
@@ -19,14 +19,20 @@ k.rts <- read.csv("../Data/kaggle_flight_routes/routes_clean.csv",header = T, st
 head(k.aps, 10)
 ```
 ```{r}
+# Basic Summary of the columns
+
 summary(k.aps)
 ```
 ```{r}
+# A different column summary, shows a preview of values. 
 str(k.aps)
 ```
 
 
 ```{r}
+# For character fields, collect all of the possible values and display them. 
+# I found this on a stack overflow post, don't entirely understand it. 
+
 k.aps %>% select(where(is.character) )%>% 
     map(~str_c(unique(.x),collapse = ",")) %>% 
     bind_rows() %>% 
@@ -35,7 +41,10 @@ k.aps %>% select(where(is.character) )%>%
 
 ```
 ```{r}
-#k.aps["satisfaction"] <- ifelse(k.aps["satisfaction"]=="satisfied", 1, 0)
+
+# convert independent variables to factors
+# convert dependent variable to 1/0 value
+# drop the id column
 
 k.aps.clean = k.aps %>% mutate(Gender=factor(Gender),
                          Customer.Type=factor(Customer.Type),
@@ -43,36 +52,51 @@ k.aps.clean = k.aps %>% mutate(Gender=factor(Gender),
                          Class=factor(Class),
                          satisfaction=ifelse(satisfaction=="satisfied", 1,0)) %>% 
                   select(!id)
-k.aps.clean
+# preview it
+head(k.aps.clean)
 
-summary(glm(satisfaction~., "binomial", k.aps.clean))
 ```
 ```{r}
+m <- glm(satisfaction~ .^2, "binomial", k.aps.clean)
+summary(m)
+```
+
+
+```{r}
+# train.n is equal to the record count of a 70% segment of the data
 train.n <- (round(0.7 * length(k.aps.clean$Gender)))
+
+# generate row indices randomly
 indices <- sample(seq(1, length(k.aps.clean$Gender
                                 )), train.n)
+
+# use the row indices to populate a training set
 train <- k.aps.clean[indices,]
+# reverse the row indices to populate a validation set
 validate <-k.aps.clean[-indices,]
-train
-validate
+head(train)
+head(validate)
+
+
 ```
 ```{r}
+# retrain the model using only the training set
 m <- (glm(satisfaction~., "binomial", train))
 summary(m)
 ```
-```{r}
-plot(m)
-```
+
 
 
 ```{r}
+# make predictions of the "response" type (probabilities)
+# round those probabilities to create 0/1 predictions
+
 validate["prediction"] <- round(predict(m, validate, type="response"))
+
+# take the average of a boolean comparison to get accuracy
 mean(validate["satisfaction"]==validate["prediction"], na.rm = T)
 
 ```
 
-
-```{r}
-```
 
 
