@@ -1,0 +1,404 @@
+```{r}
+#install.packages("purrr")
+#install.packages("visdat")
+#install.packages("stargazer")
+```
+```{r}
+library(purrr)
+library(readxl)
+library(tidyverse)
+library(stringr)
+library(car)
+library(visdat)
+library(stargazer)
+```
+
+# Kaggle Airline Passenger Satisfaction
+
+https://www.kaggle.com/datasets/teejmahal20/airline-passenger-satisfaction
+
+## About Dataset
+### Context
+
+This dataset contains an airline passenger satisfaction survey. What factors are highly correlated to a satisfied (or dissatisfied) passenger? Can you predict passenger satisfaction?
+
+* *Gender*: Gender of the passengers (Female, Male)
+
+* *Customer Type*: The customer type (Loyal customer, disloyal customer)
+
+* *Age*: The actual age of the passengers
+
+* *Type of Travel*: Purpose of the flight of the passengers (Personal Travel, Business Travel)
+
+* *Class*: Travel class in the plane of the passengers (Business, Eco, Eco Plus)
+
+* *Flight distance*: The flight distance of this journey
+
+* *Inflight wifi service*: Satisfaction level of the inflight wifi service (0:Not Applicable;1-5)
+
+* *Departure/Arrival time convenient*: Satisfaction level of Departure/Arrival time convenient
+
+* *Ease of Online booking*: Satisfaction level of online booking
+
+* *Gate location*: Satisfaction level of Gate location
+
+* *Food and drink*: Satisfaction level of Food and drink
+
+* *Online boarding*: Satisfaction level of online boarding
+
+* *Seat comfort*: Satisfaction level of Seat comfort
+
+* *Inflight entertainment*: Satisfaction level of inflight entertainment
+
+* *On-board service*: Satisfaction level of On-board service
+
+* *Leg room service*: Satisfaction level of Leg room service
+
+* *Baggage handling*: Satisfaction level of baggage handling
+
+* *Check-in service*: Satisfaction level of Check-in service
+
+* *Inflight service*: Satisfaction level of inflight service
+
+* *Cleanliness*: Satisfaction level of Cleanliness
+
+* *Departure Delay in Minutes*: Minutes delayed when departure
+
+* *Arrival Delay in Minutes*: Minutes delayed when Arrival
+
+* *Satisfaction*: Airline satisfaction level(Satisfaction, neutral or dissatisfaction)
+
+
+```{r}
+k.aps <- read.csv("../Data/kaggle_aps/train.csv", header = T, stringsAsFactors = F, row.names = "X")
+
+
+```
+```{r}
+# Simple Preview
+
+head(k.aps, 10)
+```
+```{r}
+# Basic Summary of the columns
+
+summary(k.aps)
+```
+```{r}
+# A different column summary, shows a preview of values. 
+str(k.aps)
+```
+
+
+```{r}
+# For character fields, collect all of the possible values and display them. 
+# I found this on a stack overflow post, don't entirely understand it. 
+
+k.aps %>% select(where(is.character) )%>% 
+    map(~str_c(unique(.x),collapse = ",")) %>% 
+    bind_rows() %>% 
+    gather(key = col_name, value = col_unique)
+    
+
+```
+```{r}
+# convert independent variables to factors
+# convert dependent variable to 1/0 value
+# drop the id column
+
+k.aps.clean = k.aps %>% mutate(Gender=factor(Gender),
+                         Customer.Type=factor(Customer.Type),
+                         Type.of.Travel=factor(Type.of.Travel),
+                         Class=factor(Class),
+                         satisfaction=ifelse(satisfaction=="satisfied", 1,0)) %>% 
+                  select(!id)
+# preview it
+head(k.aps.clean)
+```
+
+
+```{r}
+```
+```{r}
+m <- glm(satisfaction~ .^2, "binomial", k.aps.clean)
+summary(m)
+```
+
+
+```{r}
+# train.n is equal to the record count of a 70% segment of the data
+train.n <- (round(0.7 * length(k.aps.clean$Gender)))
+
+# generate row indices randomly
+indices <- sample(seq(1, length(k.aps.clean$Gender
+                                )), train.n)
+
+# use the row indices to populate a training set
+train <- k.aps.clean[indices,]
+# reverse the row indices to populate a validation set
+validate <-k.aps.clean[-indices,]
+head(train)
+head(validate)
+
+
+```
+```{r}
+# retrain the model using only the training set
+m <- (glm(satisfaction~. , "binomial", train))
+summary(m)
+```
+
+
+```{r}
+library(ROCR)
+library(ggfortify)
+k.aps.clean$preds <- predict(m, k.aps.clean, "response")
+ROCR.df = k.aps.clean[complete.cases(k.aps.clean), c("preds", "satisfaction")]
+preds = prediction(ROCR.df$preds, ROCR.df$satisfaction)
+perf <- performance(preds,"tpr","fpr" )
+plot(perf, colorize=T)
+```
+
+
+```{r}
+
+auc = round(performance(preds, "auc")@y.values[[1]], 3)
+```
+
+
+```{r}
+```
+
+
+```{r}
+autoplot(perf) +
+    annotate(geom="label", x=.90, y=.10, label=paste("AUC:", round(auc,3)), fill="white")
+```
+
+
+```{r}
+```
+
+```{r}
+# make predictions of the "response" type (probabilities)
+# round those probabilities to create 0/1 predictions
+
+validate["prediction"] <- round(predict(m, validate, type="response"))
+
+# take the average of a boolean comparison to get accuracy
+mean(validate["satisfaction"]==validate["prediction"], na.rm = T)
+
+```
+
+# The American Customer Satisfaction Index (ACSI): A Sample Dataset and Description 
+
+Published: 10 March 2023
+|
+Version 2
+|
+*DOI*:
+10.17632/64xkbj2ry5.2
+*Contributors*: Tomas Hult, Forrest Morgeson
+*Description*:
+This dataset provides a sample of survey data collected by the American Customer Satisfaction Index (ACSI). Using online sampling and stratified interviewing techniques of actual customers of predominantly large market-share (“large cap”) companies, the ACSI annually collects data from some 400,000 consumers residing across the United States for more than 400 companies within about 50 consumer industries. For this data depository, consumers’ perceptions of their experiences with individual companies included within four consumer industries as defined and measured by ACSI – processed food, commercial airlines, Internet service providers, and commercial banks – are included in the dataset. The overall sample size is n=8239 consumer responses for this sample ACSI dataset. These industries were chosen to represent and illustrate a cross-section of data from differentiated sectors, not because they are representative of the larger economy or larger ACSI dataset per se.
+
+Hult, Tomas; Morgeson, Forrest (2023), “The American Customer Satisfaction Index (ACSI): A Sample Dataset and Description”, Mendeley Data, V2, doi: 10.17632/64xkbj2ry5.2
+
+
+* *INDUSTRY*: Industry Code
+* *YEAR*: Year in which data collected
+* *SATIS*: Overall Customer Satisfaction
+* *CONFIRM*: Confirmation to Expectations
+* *IDEAL*: Close to ideal product/service
+* *OVERALLX*: Expectation about overall quality
+* *CUSTOMX*: Expectations about customization
+* *WRONGX*: Expectation about reliability
+* *OVERALLQ*: Overall Quality
+* *CUSTOMQ*: Meeting personal requirement (Customization)
+* *WRONGQ*: Things went wrong (Reliability)
+* *PQ*: Price given Quality
+* *QP*: Quality given Price
+* *COMP*: Customer complaints
+* *HANDLE*: Complaint handling
+* *REPUR*: Repurchase Intention
+* *HIGHPTOL*: Raising % price
+* *LOWPTOL*: Lowering % price
+* *AGE*: Age
+* *EDUCAT*: Education
+* *HISPANIC*: Hispanic
+* *RACE_1*: Race_1
+* *RACE_2*: Race_2
+* *RACE_3*: Race_3
+* *RACE_4*: Race_4
+* *RACE_5*: Race_5
+* *INCOME*: Income
+* *GENDER*: Gender
+* *ZIPCODE*: Zip code
+
+```{r}
+```
+
+
+```{r}
+# read data
+m.aps <- read_excel(path = "../Data/mendeley_aps/ACSI_Data_2015.xlsx",na = c("98","99"))
+m.aps %>% vis_dat()
+```
+
+
+```{r}
+m.aps <- read_excel(path = "../Data/mendeley_aps/ACSI_Data_2015.xlsx",na = c("98","99"))
+
+# pull airline (3003) industry 
+m.aps <- m.aps %>% filter(INDUSTRY==3003) %>% 
+                # Create factor variables with mutate
+                   mutate(GENDER=as.factor(ifelse(GENDER==1, "male", ifelse(GENDER==2, "female", NA))),
+                          ZIPCODE=as.factor(ZIPCODE),
+                          EDUCAT=as.factor(case_match(EDUCAT,
+                                                      1~"Less than high school",
+                                                      2~"High school",
+                                                      3~"Some/Assoc",
+                                                      4~"Graduate",
+                                                      5~"Post-Graduate")
+                                           ),
+                          INCOME=as.factor(case_match(INCOME,
+                                                      1~"Under 20",
+                                                      2~"20-30",
+                                                      3~"30-40",
+                                                      4~"40-60",
+                                                      5~"60-80",
+                                                      6~"80-100",
+                                                      7~"100+")),
+                          # Combining Hisp & Race for ethnicity (common approach)
+                          ETHNICITY=as.factor(ifelse(HISPANIC==1, "Hisp", case_match(RACE_1,
+                                                                           1~"White",
+                                                                           2~"Black",
+                                                                           3~"Indig",
+                                                                           4~"Asian",
+                                                                           5~"Islander",
+                                                                           6~"Other"))),
+                    
+                          
+                          
+                          )         %>% 
+                    # dropping Industry (one value), Year (one value), Hisp and race fields(replaced per above)
+                    select(-c(INDUSTRY, YEAR,HISPANIC, RACE_1, RACE_2, RACE_3, RACE_4, RACE_5)) 
+        
+```
+
+
+```{r}
+# Summary statistics of fields. 
+summary(m.aps)
+```
+```{r}
+# Checking each field for possible values
+str(m.aps)
+```
+
+
+
+```{r}
+gridExtra::grid.arrange(
+ggplot(m.aps, aes(x=SATIS, y=REPUR))+
+    geom_point(position="jitter"),
+ggplot(),
+ggplot(m.aps, aes(x=SATIS, y=HIGHPTOL))+
+    geom_point(position="jitter"),
+ggplot(m.aps, aes(x=REPUR, y=HIGHPTOL))+
+    geom_point(position="jitter"),
+ggplot(m.aps, aes(x=SATIS, y=LOWPTOL))+
+    geom_point(position="jitter"),
+
+ggplot(m.aps, aes(x=REPUR, y=LOWPTOL))+
+    geom_point(position="jitter"),
+nrow=3)
+
+```
+
+
+```{r}
+m.aps <- m.aps %>% mutate(PRICETOL = ifelse(!is.na(HIGHPTOL), HIGHPTOL, -LOWPTOL)) 
+gridExtra::grid.arrange(
+ggplot(m.aps, aes(x=SATIS, y=REPUR))+
+    geom_point(position="jitter"),
+
+ggplot(m.aps, aes(x=SATIS, y=PRICETOL))+
+    geom_point(position="jitter"),
+ggplot(m.aps, aes(x=REPUR, y=PRICETOL))+
+    geom_point(position="jitter"),
+ncol=2,
+nrow=2)
+
+```
+```{r}
+```
+
+
+```{r}
+# Looking for a good cutpoint for binary satisfaction measure, possibly (8,9,10) are satisfied. 
+m.aps %>% ggplot(aes(x=SATIS)) +
+    geom_histogram()
+```
+```{r}
+avg.satis <- colMeans(m.aps["SATIS"], na.rm = T)[[1]]
+
+avg.satis
+m.aps %>% ggplot(aes(x=AGE, y=REPUR)) +
+    geom_point(position="jitter") +
+    geom_smooth(method="auto", se=TRUE, fullrange=FALSE, level=0.95)+
+    geom_hline(yintercept=avg.satis, linetype="dashed", color="red" )
+
+m.aps %>% ggplot(aes(x=GENDER, y=SATIS)) +
+    geom_point(position="jitter") +
+    geom_smooth(method="auto", se=TRUE, fullrange=FALSE, level=0.95)+
+    geom_hline(yintercept=avg.satis, linetype="dashed", color="red" )
+        
+```
+```{r}
+summary(lm(satisfaction~Gender, k.aps.clean))
+summary(lm(SATIS~GENDER, m.aps))
+summary(lm(REPUR~GENDER, m.aps))
+
+summary(lm(satisfaction~Age, k.aps.clean))
+summary(lm(SATIS~AGE, m.aps))
+summary(lm(REPUR~AGE, m.aps))
+
+summary(lm(satisfaction~Gender+Age, k.aps.clean))
+summary(lm(SATIS~GENDER+AGE, m.aps))
+
+summary(lm(REPUR~AGE+GENDER, m.aps))
+
+```
+
+```{r}
+for ( i in 1:ncol(m.aps)){
+  cat("Column", colnames(m.aps[,i]), "has", sum(is.na(m.aps[,i])), "NA values.\n")
+}
+
+subset(m.aps, select = -c(19,29))
+```
+
+
+
+```{r}
+
+#install.packages("skimr")
+library(skimr)
+skim(k.aps)
+
+```
+```{r}
+starlight(
+summary(glm(satisfaction~., "binomial", k.aps.clean)))
+```
+```{r}
+library(outliers)
+grubbs.test(k.aps.clean)
+```
+
+
+```{r}
+ library(randomForest)
+```
+
