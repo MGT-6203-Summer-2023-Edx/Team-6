@@ -1,4 +1,0 @@
-
-    Inside this directory is your "working" project directory. Feel free to completely customize the directory and file structure to your group's needs. 
-    Feel free to add, delete, rename, and create at will. 
-    Also remember to rename "Your Project Name" to your group's own project name.
