@@ -229,23 +229,19 @@ summary(data_mod)
 sapply(data_mod,class)
 
 #correlations for categorical variables
-library(polycor)
-polychor(data_mod$Checkin.service,data_mod$Checkin.service)
-
 corr = c()
 cat1 = c()
 cat2 = c()
 for (i in c(1,2,4,5,7:20)) {
   for (j in c(1,2,4,5,7:20)) {
-    correlation = polychor(data_mod[,i],data_mod[,j],maxcor = 1)
+    x = as.numeric(ordered(data_mod[,i])) #this is not treating x and y simply as continuous numbers. It is treating them as ranks
+    y = as.numeric(ordered(data_mod[,j]))
+    correlation = cor(x, y, method = "spearman")
     cat1 = c(cat1,colnames(data_mod)[i])
     cat2 = c(cat2,colnames(data_mod)[j])
     corr = c(corr,correlation)
   }
 }
-length(corr)
-length(cat1)
-length(cat2)
 cat_corr = data.frame(cat1,cat2,corr)
 head(cat_corr)
 
