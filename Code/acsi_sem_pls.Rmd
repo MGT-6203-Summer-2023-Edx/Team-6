@@ -1,0 +1,93 @@
+```{r}
+#install.packages("plspm")
+library(plspm)
+library(tidyverse)
+
+setwd("../Team-6/")
+df <- readxl::read_xlsx("Data/mendeley_aps/ACSI_Data_2015.xlsx")
+
+# Define the list of blocks (or observed variables) for each latent variable
+blocks = list(
+            # Customer Expectations
+            # OVERALLX, CUSTOMX, WRONGX
+            
+            6:8,
+            # Perceived Loyalty
+            # OVERALLQ, CUSTOMQ, WRONGQ
+            9:11,
+            # Perceived Value
+            # PQ, QP
+            12:13,
+            # Customer Satisfaction
+            # SATIS, CONFIRM, IDEAL
+            3:5,
+            # Customer Complaints
+            # COMP, HANDLE
+            14:15,
+            # Customer Loyalty
+            # REPUR, HIGHPTOL, LOWPTOL
+            16:18
+            )
+lapply(blocks, function(block) names(df)[block])
+
+```
+Define Relationships:
+
+Customer Expectations -> Perceived Quality
+Perceived Quality -> Perceived Value
+Customer Expectations -> Perceived Value
+
+Perceived Value -> Customer Satisfaction
+Perceived Quality -> Customer Satisfaction
+Customer Expectations-> Customer Satisfaction 
+
+Customer Satisfaction -> Customer Complaints
+Customer Satisfaction -> Customer Loyalty
+Customer Complaints -> Customer Loyalty
+```{r}
+inner = matrix(c(
+# Expectations maps to Quality, Value, Satisfaction
+  0, 1, 1, 1, 0, 0,
+# Quality maps to Value, Satisfaction
+  0, 0, 1, 1, 0, 0,
+# Value maps to Satisfiaction
+  0, 0, 0, 1, 0, 0,
+# Satisfaction maps to complaints, loyalty
+  0, 0, 0, 0, 1, 1,
+# complaints maps to loyalty
+  0, 0, 0, 0, 0, 1,
+# Loyalty maps to none
+  0, 0, 0, 0, 0, 0
+), nrow = 6, ncol = 6, byrow = FALSE)
+inner
+```
+```{r}
+# Each block is formative (latent variable is formed by the observed variables)
+
+modes = rep("B", 6)
+```
+```{r}
+latent = c( "Customer Expectations",
+            "Perceived Loyalty",
+            "Perceived Value",
+            "Customer Satisfaction",
+            "Customer Complaints",
+            "Customer Loyalty")
+            
+```
+
+```{r}
+# Run the PLS-PM model
+plspm_model <- df %>% 
+    plspm(.,path_matrix = inner, 
+          
+          blocks = blocks, 
+          modes = modes,
+          scaling=T,
+)
+
+
+# Print out the results
+print(plspm_model)
+```
+

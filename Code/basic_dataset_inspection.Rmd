@@ -401,4 +401,29 @@ grubbs.test(k.aps.clean)
 ```{r}
  library(randomForest)
 ```
+```{r}
+model = glm(satisfaction~Ease.of.Online.booking, data=k.aps.clean, family = binomial(link = "logit"))
+summary(model)
+pred = round(predict(model, validate,type="response"))
+matrix = as.matrix(table(pred,validate$satisfaction))
+accuracy = (matrix[1,1]+matrix[2,2])/sum(matrix)
+accuracy
+
+data_mod_dum = k.aps.clean
+zeroes = which(data_mod_dum$Ease.of.Online.booking==0)
+getmode = function(values){
+  uniquev = unique(values)
+  uniquev[which.max(tabulate(match(values,uniquev)))]
+}
+mode = getmode(data_mod_dum[-zeroes,"Ease.of.Online.booking"])
+data_mod_dum[zeroes,"Ease.of.Online.booking"] = mode
+
+model = glm(satisfaction~Ease.of.Online.booking, 
+            data=data_mod_dum, family = binomial(link = "logit"))
+summary(model)
+pred = round(predict(model, validate,type="response"))
+matrix = as.matrix(table(pred,data_mod_dum$satisfaction))
+accuracy = (matrix[1,1]+matrix[2,2])/sum(matrix)
+accuracy
+```
 

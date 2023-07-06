@@ -1,13 +1,13 @@
-setwd("C:/Users/ripun/OneDrive/Desktop/Raaji/GaTech/MGT 6203 - Data Analytics in Business/Project/Dataset")
+library(tidyverse)
+library(reshape)
 
-data = read.csv("train.csv",header = TRUE)
+data = read.csv("Data/kaggle_aps/train.csv",header = TRUE)
 head(data)
 summary(data)
 
-library(dplyr)
 data = data %>%
   select(Gender,Customer.Type,Age,Type.of.Travel,Class,Flight.Distance,Inflight.wifi.service,
-         Departure..Arrival.time.convenient,Ease.of.Online.booking,Gate.location,Food.and.drink,
+         Departure.Arrival.time.convenient,Ease.of.Online.booking,Gate.location,Food.and.drink,
          Online.boarding,Seat.comfort,Inflight.entertainment,On.board.service,Leg.room.service,
          Baggage.handling,Checkin.service,Inflight.service,Cleanliness,Departure.Delay.in.Minutes,
          Arrival.Delay.in.Minutes,satisfaction) %>%
@@ -31,7 +31,6 @@ dim(data1)
 correlation = round(cor(data1[c("Age","Flight.Distance","Departure.Delay.in.Minutes","Arrival.Delay.in.Minutes")]),2)
 
 #heatmap
-library(reshape)
 cor_mod = melt(correlation)
 cor_mod
 
@@ -352,3 +351,4 @@ pred = round(predict(model, valid,type="response"))
 matrix = as.matrix(table(pred,valid$satisfaction))
 accuracy = (matrix[1,1]+matrix[2,2])/sum(matrix)
 accuracy
+print('fini')

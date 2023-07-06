@@ -1,1 +1,1 @@
-https://data.mendeley.com/datasets/64xkbj2ry5/1/files/e4e4b8b0-0d7d-41a9-a2be-c1e586897d7e
+Hult, Tomas; Morgeson, Forrest (2023), “The American Customer Satisfaction Index (ACSI): A Sample Dataset and Description”, Mendeley Data, V2, doi: 10.17632/64xkbj2ry5.2
