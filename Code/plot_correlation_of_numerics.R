@@ -35,9 +35,9 @@ df %>% filter(!is.na(Arrival.Delay.in.Minutes)) %>%
     coord_fixed() +
     geom_text(aes(X2, X1, label = value), color = "black", size = 2) +
     labs(title = "Correlation of Numeric Variables") +
-    theme(axis.title.x = element_blank(), axis.title.y = element_blank())
+    theme(axis.title.x = element_blank(), axis.title.y = element_blank()) +
 
     
 ggsave(filename="correlation_of_numeric_vars.png", path="Visualizations/", 
-       width =6, height=6, units="in")
+   width =6, height=6, units="in", )
     
