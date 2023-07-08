@@ -70,10 +70,10 @@ for (i in 9:ncol(data_mod)-2) {
     mode = as.numeric(getmode(data_mod[-missing,i]))
     data_mod[missing,i] = mode
 }
-
+str(data_mod)
 sapply(data_mod,class)
 
-data_mod = data_mod %>%
+adata_mod = data_mod %>%
     mutate(Gender = factor(Gender)) %>%
     mutate(Customer.Type = factor(Customer.Type)) %>%
     mutate(Type.of.Travel = factor(Type.of.Travel)) %>%
@@ -104,15 +104,59 @@ model.rpart$frame
 
 # Plant a random forest with the "raw" data. Any NA values are omitted from the model
 model.random <- randomForest(satisfaction~., data = data, na.action = na.omit, keep.forest = FALSE, importance = TRUE)
-model.random
+Print("*** model.random ***")
+model.random # Accuracy = 3.71%
 importance(model.random)
 varImpPlot(model.random)
 
+# Let's check the accuracy of the top 12 indicators
+data_top12 <- data %>%
+    select(c(Inflight.wifi.service,Checkin.service,Type.of.Travel,Seat.comfort,Baggage.handling,Customer.Type,
+             Online.boarding,Inflight.service,Cleanliness,Age,On.board.service,Inflight.entertainment,satisfaction))
+str(data_top12)
+model.random.top12 <- randomForest(satisfaction~., data = data_top12, na.action = na.omit, keep.forest = FALSE, importance = TRUE)
+Print("*** model.random.top12 ***")
+model.random.top12 # Accuracy = 
+importance(model.random.top12)
+varImpPlot(model.random.top12)
+
+# Let's try the top 8
+data_top8 <- data %>%
+    select(c(Inflight.wifi.service,Checkin.service,Type.of.Travel,Seat.comfort,Baggage.handling,Customer.Type,
+             Seat.comfort, Baggage.handling, Online.boarding, Inflight.service, satisfaction))
+
+model.random.top8 <- randomForest(satisfaction~., data = data_top8, na.action = na.omit, keep.forest = FALSE, importance = TRUE)
+Print("*** model.random.top8 ***")
+model.random.top8 # Accuracy =  
+importance(model.random.top8)
+varImpPlot(model.random.top8)
+
+#####
 # Plant a random forest with the mod data. 0's imputed with the mode and Arrival delay removed
-tic("model.random.mod")
-model.random.mod <- randomForest(satisfaction~., data = data, na.action = na.omit, keep.forest = FALSE, importance = TRUE)
-toc()
-model.random.mod
+model.random.mod <- randomForest(satisfaction~., data = data_mod, na.action = na.omit, keep.forest = FALSE, importance = TRUE)
+Print("*** model.random.mod ***")
+model.random.mod  # accuracy = 3.89%
 importance(model.random.mod)
 varImpPlot(model.random.mod)
 
+# Let's check the accuracy of the top 12 indicators
+data_mod_top12 <- data_mod %>%
+    select(c(Inflight.wifi.service,Checkin.service,Type.of.Travel,Seat.comfort,Baggage.handling,Customer.Type,
+             Online.boarding,Inflight.service,Cleanliness,Age,On.board.service,Inflight.entertainment,satisfaction))
+
+model.random.modtop12 <- randomForest(satisfaction~., data = data_mod_top12, na.action = na.omit, keep.forest = FALSE, importance = TRUE)
+Print("*** model.random.modtop12 ***")
+model.random.modtop12 # Accuracy = 4.41%
+importance(model.random.modtop12)
+varImpPlot(model.random.modtop12)
+
+# Let's try the top 8
+data_mod_top8 <- data_mod %>%
+    select(c(Inflight.wifi.service,Checkin.service,Type.of.Travel,Seat.comfort,Baggage.handling,Customer.Type,
+             Seat.comfort, Baggage.handling, Online.boarding, Inflight.service, satisfaction))
+
+model.random.modtop8 <- randomForest(satisfaction~., data = data_mod_top8, na.action = na.omit, keep.forest = FALSE, importance = TRUE)
+Print("*** model.random.modtop8 ***")
+model.random.modtop8 # Accuracy = 5.65%    
+importance(model.random.modtop8)
+varImpPlot(model.random.modtop8)
