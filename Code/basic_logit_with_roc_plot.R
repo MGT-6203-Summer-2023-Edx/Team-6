@@ -3,7 +3,6 @@ library(ggfortify)
 library(tidyverse)
 library(ROCR)
 
-
 # Read and wrangle
 df <- read.csv("Data/kaggle_aps/train.csv", header = T, 
                stringsAsFactors = F, 
