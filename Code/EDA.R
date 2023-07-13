@@ -92,8 +92,11 @@ colnames(test)
 #one column name is different from train data. So renaming it
 colnames(test)[10]="Departure..Arrival.time.convenient"
 
-#dropping id and arrival delay columns as dimensions have to be same as of train data. Also, applying log transformation to flight distance and departure delay as 
-#the same was done to the training data. Otherwise, model can perform worse on the test data and lead to unreliable results
+#dropping id and arrival delay columns as dimensions have to be same as of train data. 
+#If both train and test sets are on different scales then model can perform worse on the test data and lead to unreliable results. Hence, applying log transformation to 
+#flight distance and departure delay.
+#Had it been standardization or normalization, we take the data from training set and insert it to test set. But since it is just a log transformation,
+#we can directly apply log to the test data and data leakage issue would not be there.
 test = test %>%
   select(Gender,Customer.Type,Age,Type.of.Travel,Class,Flight.Distance,Inflight.wifi.service,
          Departure..Arrival.time.convenient,Ease.of.Online.booking,Gate.location,Food.and.drink,
