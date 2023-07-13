@@ -1,5 +1,4 @@
-setwd("C:/Users/ripun/OneDrive/Desktop/Raaji/GaTech/MGT 6203 - Data Analytics in Business/Project/Dataset")
-data = read.csv("train.csv",header = TRUE)
+data = read.csv("Data/kaggle_aps/train.csv",header = TRUE)
 
 library(dplyr)
 
@@ -81,21 +80,20 @@ outliers_removed = subset(train,train$Departure.Delay.in.Minutes > (Q1 - 1.5*IQR
 
 dim(outliers_removed)
 dim(train)
-#outliers are only 12 and these might be real data. For example, a flight can be delayed
-#for more than 3-4 hours because of bad weather, technical difficulties etc., So, we decided
-#to keep them in the data
+#outliers are only 12 and these might be real data. For example, a flight can be delayed for more than 3-4 hours because of bad weather, technical difficulties etc.,
+#So, we decided to keep them in the data
+
+
 
 #making the same transformations for test data as well.
-test = read.csv("test.csv",header = TRUE)
+test = read.csv("Data/kaggle_aps/test.csv",header = TRUE)
 head(test)
 colnames(test)
 #one column name is different from train data. So renaming it
 colnames(test)[10]="Departure..Arrival.time.convenient"
 
-#dropping id and arrival delay columns as dimensions have to be same as of train data.
-#applying log transformation to flight distance and departure delay as the same was done
-#to the training data. Otherwise, model can perform worse on the test data and lead to
-#unreliable results
+#dropping id and arrival delay columns as dimensions have to be same as of train data. Also, applying log transformation to flight distance and departure delay as 
+#the same was done to the training data. Otherwise, model can perform worse on the test data and lead to unreliable results
 test = test %>%
   select(Gender,Customer.Type,Age,Type.of.Travel,Class,Flight.Distance,Inflight.wifi.service,
          Departure..Arrival.time.convenient,Ease.of.Online.booking,Gate.location,Food.and.drink,
