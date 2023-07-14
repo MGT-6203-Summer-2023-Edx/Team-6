@@ -5,7 +5,7 @@ library(dplyr)
 #dropping id and arrival delay columns
 data = data %>%
   select(Gender,Customer.Type,Age,Type.of.Travel,Class,Flight.Distance,Inflight.wifi.service,
-         Departure..Arrival.time.convenient,Ease.of.Online.booking,Gate.location,Food.and.drink,
+         Departure.Arrival.time.convenient,Ease.of.Online.booking,Gate.location,Food.and.drink,
          Online.boarding,Seat.comfort,Inflight.entertainment,On.board.service,Leg.room.service,
          Baggage.handling,Checkin.service,Inflight.service,Cleanliness,Departure.Delay.in.Minutes,
          satisfaction) %>%
@@ -46,7 +46,7 @@ data = data %>%
   mutate(Type.of.Travel = factor(Type.of.Travel)) %>%
   mutate(Class = factor(Class)) %>%
   mutate(Inflight.wifi.service = factor(Inflight.wifi.service)) %>%
-  mutate(Departure..Arrival.time.convenient = factor(Departure..Arrival.time.convenient)) %>%
+  mutate(Departure.Arrival.time.convenient = factor(Departure.Arrival.time.convenient)) %>%
   mutate(Ease.of.Online.booking = factor(Ease.of.Online.booking)) %>%
   mutate(Gate.location = factor(Gate.location)) %>%
   mutate(Food.and.drink = factor(Food.and.drink)) %>%
@@ -89,8 +89,6 @@ dim(train)
 test = read.csv("Data/kaggle_aps/test.csv",header = TRUE)
 head(test)
 colnames(test)
-#one column name is different from train data. So renaming it
-colnames(test)[10]="Departure..Arrival.time.convenient"
 
 #dropping id and arrival delay columns as dimensions have to be same as of train data. 
 #If both train and test sets are on different scales then model can perform worse on the test data and lead to unreliable results. Hence, applying log transformation to 
@@ -99,7 +97,7 @@ colnames(test)[10]="Departure..Arrival.time.convenient"
 #we can directly apply log to the test data and data leakage issue would not be there.
 test = test %>%
   select(Gender,Customer.Type,Age,Type.of.Travel,Class,Flight.Distance,Inflight.wifi.service,
-         Departure..Arrival.time.convenient,Ease.of.Online.booking,Gate.location,Food.and.drink,
+         Departure.Arrival.time.convenient,Ease.of.Online.booking,Gate.location,Food.and.drink,
          Online.boarding,Seat.comfort,Inflight.entertainment,On.board.service,Leg.room.service,
          Baggage.handling,Checkin.service,Inflight.service,Cleanliness,Departure.Delay.in.Minutes,
          satisfaction) %>%
@@ -134,7 +132,7 @@ test = test %>%
   mutate(Type.of.Travel = factor(Type.of.Travel)) %>%
   mutate(Class = factor(Class)) %>%
   mutate(Inflight.wifi.service = factor(Inflight.wifi.service)) %>%
-  mutate(Departure..Arrival.time.convenient = factor(Departure..Arrival.time.convenient)) %>%
+  mutate(Departure.Arrival.time.convenient = factor(Departure.Arrival.time.convenient)) %>%
   mutate(Ease.of.Online.booking = factor(Ease.of.Online.booking)) %>%
   mutate(Gate.location = factor(Gate.location)) %>%
   mutate(Food.and.drink = factor(Food.and.drink)) %>%
