@@ -2,18 +2,18 @@ library(ggplot2)
 library(ggfortify)
 library(tidyverse)
 library(ROCR)
-library(gridExtra)
+#library(gridExtra)
 source(file = "Code/preprocessor.R")
 
-# Read and wrangle
-preprocessed <- preprocess()
-
-train <- preprocessed$train
-validate <- preprocessed$validate
-
-
-# Train Logit
-m <- train %>% glm(satisfaction ~ ., "binomial", .)
+# # Read and wrangle
+# preprocessed <- preprocess()
+# 
+# train <- preprocessed$train
+# validate <- preprocessed$validate
+# 
+# 
+# # Train Logit
+# m <- train %>% glm(satisfaction ~ ., "binomial", .)
 
 # add a column for probability predictions
 
@@ -44,29 +44,31 @@ plot_roc_auc_curve <-
         )
     }
 
-p.train <- plot_roc_auc_curve(
-    train,
-    model = m,
-    target = "satisfaction",
-    title = "Base Logit Training ROC Curve"
-)
-p.validate <-
-    plot_roc_auc_curve(
-        validate,
-        model = m,
-        target = "satisfaction",
-        title = "Base Logit Validation ROC Curve"
-    )
 
-
-g <- grid.arrange(p.train, p.validate, ncol = 2)
-g
-# Saves the most recent ggplot object as a png
-ggsave(
-    filename = "logit_sbs_roc_plots.png",
-    plot =  g,
-    path = "Visualizations/",
-    width = 9,
-    height = 5,
-    units = "in"
-)
+# plot_roc_auc_curve(train, m)
+# p.train <- plot_roc_auc_curve(
+#     train,
+#     model = m,
+#     target = "satisfaction",
+#     title = "Base Logit Training ROC Curve"
+# )
+# p.validate <-
+#     plot_roc_auc_curve(
+#         validate,
+#         model = m,
+#         target = "satisfaction",
+#         title = "Base Logit Validation ROC Curve"
+#     )
+# 
+# 
+# g <- grid.arrange(p.train, p.validate, ncol = 2)
+# g
+# # Saves the most recent ggplot object as a png
+# ggsave(
+#     filename = "logit_sbs_roc_plots.png",
+#     plot =  g,
+#     path = "Visualizations/",
+#     width = 9,
+#     height = 5,
+#     units = "in"
+# )
