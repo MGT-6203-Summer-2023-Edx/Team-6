@@ -1,5 +1,5 @@
 source(file = "Code/preprocessor.R")
 data <- preprocess()
 data$train # returns training set (70% of training csv)
-data$validation # returns training set (30% of training csv)
+data$validate # returns training set (30% of training csv)
 data$test # returns training set (100% of test csv)
