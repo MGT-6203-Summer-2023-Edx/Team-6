@@ -13,12 +13,17 @@ df <- read.csv("Data/kaggle_aps/train.csv", header = T,
                  Class=factor(Class),
                  satisfaction=ifelse(satisfaction=="satisfied", 1,0)) %>% 
           select(!id) 
-    
+
+
+
+
 # Train Logit
 m <- df %>% glm(satisfaction ~ ., "binomial", .)
 
 # Summary of Logit
 m %>% summary(.)
+
+
 
 # add a column for probability predictions
 df$preds <- predict(m, df, "response")
