@@ -5,30 +5,50 @@ library(tidyverse)
 
 
 train <- preprocessed$train
+validate <- preprocessed$validate
 
-# means <- train %>% summarize(across(where(is.numeric), mean)) %>% select(-satisfaction)
-# std.devs <- train %>% summarize(across(where(is.numeric), sd)) %>% select(-satisfaction)
-# 
-# apply.standardize <- function(data, means, std.devs){
-#     n <- dim(data)[1]
-#     for (.column in colnames(data)){
-#         
-#         subtractor <- rep(means[.column], n)
-#         divisor <- rep(std.devs[.column], n)
-#         data[.column] <- (data[.column] - subtractor)/divisor
-#         
-#     }
-#     return(data)
-#     
-# }
 
 n <- dim(train)[1]
-train.sample <- train[sample(1:n, 10000, replace = F ),]
-m <- ksvm(satisfaction ~ ., train.sample)
+set.seed(42)
+train.sample <- train[sample(1:n, 10000, replace = F), ]
 
-summary(m)
-# 
-# apply.standardize(train %>% select(where(is.numeric), -satisfaction),
-#                   means = means, 
-#                   std.devs=std.devs)
+costs = list()
+for (cost in c(.1, 1, 10)) {
+    m <-
+        ksvm(x=satisfaction ~ .,
+             data=train.sample,
+             type='C-svc',
+             kernel = "vanilladot",
+             C = cost,
+             scaled = T
+         )
+    cat("c:",
+        cost,
+        "train:",
+        mean(predict(m, train[,-22])==train$satisfaction),
+        "validate:",
+        mean(predict(m, validate[,-22])==validate$satisfaction),
+        "\n")
+    costs[[paste("c=", cost)]] <- m
+}
+set.seed(42)
+train.sample <- train[sample(1:n, 50000, replace = F), ]
 
+for (cost in c(1:100, seq(100, 1000,10))) {
+    m <-
+        ksvm(x=satisfaction ~ .,
+             data=train.sample,
+             type='C-svc',
+             kernel = "vanilladot",
+             C = cost,
+             scaled = T
+        )
+    cat("c:",
+        cost,
+        "train:",
+        mean(predict(m, train[,-22])==train$satisfaction),
+        "validate:",
+        mean(predict(m, validate[,-22])==validate$satisfaction),
+        "\n")
+    costs[[paste("c=", cost)]] <- m
+}

@@ -5,27 +5,25 @@ library(ROCR)
 #library(gridExtra)
 source(file = "Code/preprocessor.R")
 
-# # Read and wrangle
-# preprocessed <- preprocess()
-# 
-# train <- preprocessed$train
-# validate <- preprocessed$validate
-# 
-# 
-# # Train Logit
-# m <- train %>% glm(satisfaction ~ ., "binomial", .)
-
-# add a column for probability predictions
-
+.get_rocr_predictions <- function(.data, model, target) {
+    if (class(model) == "ksvm") then 
+    .data$preds <- predict(model, .data, "response")
+    .ROCR <-
+        .data[complete.cases(.data), c("preds", target)]
+    .ROCR.preds <- prediction(.ROCR$preds, .ROCR[target])
+    return(.ROCR.preds)
+}
+get_auc <- function(.data, model, target="satisfaction"){
+    .ROCR.preds <- .get_rocr_predictions(.data, model, target)
+    .ROCR.perf.auc <- performance(.ROCR.preds, "auc")
+    return(.ROCR.perf.auc@y.values[[1]])
+}
 plot_roc_auc_curve <-
     function(.data,
              model,
              target = "satisfaction",
              title = "ROC Curve") {
-        .data$preds <- predict(model, .data, "response")
-        .ROCR <-
-            .data[complete.cases(.data), c("preds", "satisfaction")]
-        .ROCR.preds <- prediction(.ROCR$preds, .ROCR$satisfaction)
+        .ROCR.preds <-  .get_rocr_predictions(.data, model, target) 
         .ROCR.perf.roc.curve <-
             performance(.ROCR.preds, "tpr", "fpr")
         .ROCR.perf.auc <- performance(.ROCR.preds, "auc")
@@ -45,7 +43,21 @@ plot_roc_auc_curve <-
     }
 
 
-# plot_roc_auc_curve(train, m)
+
+
+
+ # Read and wrangle
+ preprocessed <- preprocess()
+
+ train <- preprocessed$train
+ validate <- preprocessed$validate
+
+
+ # Train Logit
+ m <- train %>% glm(satisfaction ~ ., "binomial", .)
+
+# add a column for probability predictions
+plot_roc_auc_curve(train, m)
 # p.train <- plot_roc_auc_curve(
 #     train,
 #     model = m,
