@@ -26,7 +26,7 @@ preprocess <- function() {
                 replace = T,
                 prob = c(.7, .3)
             ),
-            satisfaction = ifelse(satisfaction == "satisfied", 1, 0)
+            satisfaction = as.factor(ifelse(satisfaction == "satisfied", 1, 0))
         )
     
     test <- read.csv("Data/kaggle_aps/test.csv", header = T, stringsAsFactors = T) %>%
@@ -41,7 +41,7 @@ preprocess <- function() {
             Departure.Delay.in.Minutes = log(1 + as.numeric(Departure.Delay.in.Minutes)),
             across(7:20, as.factor),
             fold = "test",
-            satisfaction = ifelse(satisfaction == "satisfied", 1, 0)
+            satisfaction = as.factor(ifelse(satisfaction == "satisfied", 1, 0))
         )
     
     
