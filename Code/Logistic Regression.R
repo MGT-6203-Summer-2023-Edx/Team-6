@@ -2,6 +2,14 @@ data = preprocess()
 train = data$train
 valid = data$validate
 
+#forward selection to check the order of importance of variables
+model_all = glm(satisfaction~.,data=train, family = binomial(link = "logit"))
+model_intercept = glm(satisfaction~1,data=train, family = binomial(link = "logit"))
+
+forward = step(model_intercept,scope = formula(model_all),direction="forward",trace = 0)
+forward$anova
+#Except flight distance, forward selection has chosen all the features. We decided to check the same with logistic regression and remove insignificant variables
+
 model = glm(satisfaction~., data=train, family = binomial(link = "logit"))
 summary(model)
 
