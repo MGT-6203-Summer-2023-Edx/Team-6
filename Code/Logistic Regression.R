@@ -5,41 +5,27 @@ valid = data$validate
 model = glm(satisfaction~., data=train, family = binomial(link = "logit"))
 summary(model)
 
-#few classes of factor variables are insignificant. So, adding dummy variables to the data
-#so that the insignificant classes can be excluded from the model
+#few classes of factor variables are insignificant. So, adding dummy variables to the data so that the insignificant classes can be excluded from the model
 columns_names = colnames(train)
 columns = columns_names[c(1:2,4:5,7:20)]
 train = fastDummies::dummy_cols(train,select_columns = columns)
 head(train)
 
 #running the model again after removing insignificant variables
-model = glm(satisfaction~Gender+Customer.Type+Age+Type.of.Travel+Class+
-              Inflight.wifi.service_1+Inflight.wifi.service_3+Inflight.wifi.service_4+Inflight.wifi.service_5+
-              Departure.Arrival.time.convenient_1+Departure.Arrival.time.convenient_3+
-              Departure.Arrival.time.convenient_4+Departure.Arrival.time.convenient_5+
-              Ease.of.Online.booking+Gate.location_1+Gate.location_3+Gate.location_4+Gate.location_5+
-              Food.and.drink_1+Food.and.drink_2+Food.and.drink_4+
-              Online.boarding+Seat.comfort+Inflight.entertainment+On.board.service_1+
-              On.board.service_3+On.board.service_4+On.board.service_5+
-              Leg.room.service_1+Leg.room.service_3+Leg.room.service_4+Leg.room.service_5+
-              Baggage.handling+Checkin.service+Inflight.service+Cleanliness_1+
-              Cleanliness_3+Cleanliness_4+Cleanliness_5+Departure.Delay.in.Minutes,
-            data=train, family = binomial(link = "logit"))
+model = glm(satisfaction~Gender+Customer.Type+Age+Type.of.Travel+Class+Inflight.wifi.service_1+Inflight.wifi.service_3+Inflight.wifi.service_4+Inflight.wifi.service_5+
+              Departure.Arrival.time.convenient_1+Departure.Arrival.time.convenient_3+Departure.Arrival.time.convenient_4+Departure.Arrival.time.convenient_5+
+              Ease.of.Online.booking+Gate.location_1+Gate.location_3+Gate.location_4+Gate.location_5+Food.and.drink_1+Food.and.drink_2+Food.and.drink_4+Online.boarding+
+              Seat.comfort+Inflight.entertainment+On.board.service_1+On.board.service_3+On.board.service_4+On.board.service_5+Leg.room.service_1+Leg.room.service_3+
+              Leg.room.service_4+Leg.room.service_5+Baggage.handling+Checkin.service+Inflight.service+Cleanliness_1+Cleanliness_3+Cleanliness_4+Cleanliness_5+
+              Departure.Delay.in.Minutes, data=train, family = binomial(link = "logit"))
 summary(model)
 
 #running the model again after removing insignificant variables from the above model
-model = glm(satisfaction~Gender+Customer.Type+Age+Type.of.Travel+Class+
-              Inflight.wifi.service_3+Inflight.wifi.service_4+Inflight.wifi.service_5+
-              Departure.Arrival.time.convenient_3+
-              Departure.Arrival.time.convenient_4+Departure.Arrival.time.convenient_5+
-              Ease.of.Online.booking+Gate.location_3+Gate.location_4+Gate.location_5+
-              Food.and.drink_1+Food.and.drink_2+
-              Online.boarding+Seat.comfort+Inflight.entertainment+
-              On.board.service_3+On.board.service_4+On.board.service_5+
-              Leg.room.service_3+Leg.room.service_4+Leg.room.service_5+
-              Baggage.handling+Checkin.service+Inflight.service+
-              Cleanliness_3+Cleanliness_4+Cleanliness_5+Departure.Delay.in.Minutes,
-            data=train, family = binomial(link = "logit"))
+model = glm(satisfaction~Gender+Customer.Type+Age+Type.of.Travel+Class+Inflight.wifi.service_3+Inflight.wifi.service_4+Inflight.wifi.service_5+
+              Departure.Arrival.time.convenient_3+Departure.Arrival.time.convenient_4+Departure.Arrival.time.convenient_5+Ease.of.Online.booking+Gate.location_3+
+              Gate.location_4+Gate.location_5+Food.and.drink_1+Food.and.drink_2+Online.boarding+Seat.comfort+Inflight.entertainment+On.board.service_3+On.board.service_4+
+              On.board.service_5+Leg.room.service_3+Leg.room.service_4+Leg.room.service_5+Baggage.handling+Checkin.service+Inflight.service+
+              Cleanliness_3+Cleanliness_4+Cleanliness_5+Departure.Delay.in.Minutes, data=train, family = binomial(link = "logit"))
 summary(model)
 
 #function for accuracy
@@ -56,8 +42,7 @@ cat("Training accuracy is",accuracy_train)
 
 #roc curve
 library(ROCR)
-predictions <- prediction(as.numeric(predict(model, train,type="response")),
-                          as.numeric(train$satisfaction))
+predictions <- prediction(as.numeric(predict(model, train,type="response")), as.numeric(train$satisfaction))
 roc <- performance(predictions,"tpr", "fpr")
 plot(roc,main="ROC curve for GLM model")
 
