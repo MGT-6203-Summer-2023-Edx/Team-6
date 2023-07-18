@@ -6,157 +6,83 @@ rm(list = ls())   # Clear all the variables and data
 try(dev.off(dev.list()["RStudioGD"]),silent=TRUE)
 try(dev.off(),silent=TRUE)
 
-
-library(tidyverse)
-# install.packages("tree")
-library(tree)         # needed for tree function
-library(randomForest) # needed for 
-# install.packages("rpart")
-# install.packages("rpart.plot")
-# install.packages("rattle")
-library(rpart)
-library(rpart.plot)
-library(rattle)
-#install.packages("tictoc")
+source("Code/preprocessor.R")
+source("Code/preprocessor_test.R")
+#source("Code/decision_tree.R")
+#library(tidyverse)
+library(randomForest)
+library(ROCR)
+#library(caret)
 library(tictoc)
 
-data = read.csv("Data/kaggle_aps/train.csv",header = TRUE)
-#test = read.csv("Data/Kaggle_aps/test.csv", header = TRUE)
-head(data)
-summary(data)
-str(data)
+# Get our data loaded up
+train <- data$train
+val <- data$validate
+test <- data$test
 
-# Remove X and ID columns, factor all the columns except Age, Flight.Distance, Departure.Delay, and Arrival.Delay
-data <- data %>%
-    dplyr::select(-c(X,id)) %>%
-    mutate(Gender = factor(Gender)) %>%
-    mutate(Customer.Type = factor(Customer.Type)) %>%
-    mutate(Type.of.Travel = factor(Type.of.Travel)) %>%
-    mutate(Class = factor(Class)) %>%
-    mutate(Inflight.wifi.service = factor(Inflight.wifi.service)) %>%
-    mutate(Departure.Arrival.time.convenient = factor(Departure.Arrival.time.convenient)) %>%
-    mutate(Ease.of.Online.booking = factor(Ease.of.Online.booking)) %>%
-    mutate(Gate.location = factor(Gate.location)) %>%
-    mutate(Food.and.drink = factor(Food.and.drink)) %>%
-    mutate(Online.boarding = factor(Online.boarding)) %>%
-    mutate(Seat.comfort = factor(Seat.comfort)) %>%
-    mutate(Inflight.entertainment = factor(Inflight.entertainment)) %>%
-    mutate(On.board.service = factor(On.board.service)) %>%
-    mutate(Leg.room.service = factor(Leg.room.service)) %>%
-    mutate(Baggage.handling = factor(Baggage.handling)) %>%
-    mutate(Checkin.service = factor(Checkin.service)) %>%
-    mutate(Inflight.service = factor(Inflight.service)) %>%
-    mutate(Cleanliness = factor(Cleanliness)) %>%
-    mutate(satisfaction=factor(ifelse(satisfaction=="satisfied", 1,0)))
-
-str(data)            
-
-# Drop the Arrival Delays column due to correlation
-data_mod <- data %>%
-    dplyr::select(-Arrival.Delay.in.Minutes)
-str(data_mod)
-
-# Stole this from Raajitha. 
-# Almost all the variables has 0s. Only Departure..Arrival.time.convenient has slight more than 5% of the data.
-# Imputing 0s with mode of the data
-# function for mode
-getmode = function(values){
-    uniquev = unique(values)
-    uniquev[which.max(tabulate(match(values,uniquev)))]
-}
-
-for (i in 9:ncol(data_mod)-2) {
-    missing = which(data_mod[,i]==0)
-    mode = as.numeric(getmode(data_mod[-missing,i]))
-    data_mod[missing,i] = mode
-}
-str(data_mod)
-sapply(data_mod,class)
-
-adata_mod = data_mod %>%
-    mutate(Gender = factor(Gender)) %>%
-    mutate(Customer.Type = factor(Customer.Type)) %>%
-    mutate(Type.of.Travel = factor(Type.of.Travel)) %>%
-    mutate(Class = factor(Class)) %>%
-    mutate(Inflight.wifi.service = factor(Inflight.wifi.service)) %>%
-    mutate(Departure.Arrival.time.convenient = factor(Departure.Arrival.time.convenient)) %>%
-    mutate(Ease.of.Online.booking = factor(Ease.of.Online.booking)) %>%
-    mutate(Gate.location = factor(Gate.location)) %>%
-    mutate(Food.and.drink = factor(Food.and.drink)) %>%
-    mutate(Online.boarding = factor(Online.boarding)) %>%
-    mutate(Seat.comfort = factor(Seat.comfort)) %>%
-    mutate(Inflight.entertainment = factor(Inflight.entertainment)) %>%
-    mutate(On.board.service = factor(On.board.service)) %>%
-    mutate(Leg.room.service = factor(Leg.room.service)) %>%
-    mutate(Baggage.handling = factor(Baggage.handling)) %>%
-    mutate(Checkin.service = factor(Checkin.service)) %>%
-    mutate(Inflight.service = factor(Inflight.service)) %>%
-    mutate(Cleanliness = factor(Cleanliness)) %>%
-    mutate(satisfaction=factor(ifelse(satisfaction=="satisfied", 1,0)))
-str(data_mod)
-
-# Build a decision tree
-model.rpart <- rpart(satisfaction~., data = data, method = "class")
-model.rpart
-summary(model.rpart)
-fancyRpartPlot(model.rpart, main="Decision Tree Graph")
-model.rpart$frame
+# Since randomForest performs a cross validation already, combine train and validation data sets.
+train.full <- rbind(train, val)
+train.full$satisfaction <- factor(train.full$satisfaction)
 
 # Plant a random forest with the "raw" data. Any NA values are omitted from the model
-model.random <- randomForest(satisfaction~., data = data, na.action = na.omit, keep.forest = FALSE, importance = TRUE)
-Print("*** model.random ***")
-model.random # Accuracy = 3.71%
+# Edited the ntree parameter down to 250 after the initial runs to help with processing time
+tic()
+set.seed(42)
+model.random <- randomForest(x = train.full[,-22], y = train.full[,22], na.action = na.omit, 
+                             keep.forest = FALSE, importance = TRUE, ntree = 250)
+toc() # 106 seconds
+print("*** model.random ***")
+model.random # Accuracy = 4.04%
 importance(model.random)
 varImpPlot(model.random)
+title(main = "Full Training Data Set")
+# To reduce time, how many trees are needed before error converges?
+plot(model.random)  # Around 250 looks good
 
-# Let's check the accuracy of the top 12 indicators
-data_top12 <- data %>%
-    select(c(Inflight.wifi.service,Checkin.service,Type.of.Travel,Seat.comfort,Baggage.handling,Customer.Type,
-             Online.boarding,Inflight.service,Cleanliness,Age,On.board.service,Inflight.entertainment,satisfaction))
-str(data_top12)
-model.random.top12 <- randomForest(satisfaction~., data = data_top12, na.action = na.omit, keep.forest = FALSE, importance = TRUE)
-Print("*** model.random.top12 ***")
-model.random.top12 # Accuracy = 
-importance(model.random.top12)
-varImpPlot(model.random.top12)
+# Attempt to optimize the random forest
+# https://www.listendata.com/2014/11/random-forest-with-r.html
+tic()
+mtry <- tuneRF(train.full[-22],train.full$satisfaction, ntree=250,
+               stepFactor=1.5,improve=0.01, trace=TRUE, plot=TRUE)
+best.m <- mtry[mtry[, 2] == min(mtry[, 2]), 1]
+print(mtry)
+print(best.m)  # 13
+toc()
 
-# Let's try the top 8
-data_top8 <- data %>%
-    select(c(Inflight.wifi.service,Checkin.service,Type.of.Travel,Seat.comfort,Baggage.handling,Customer.Type,
-             Seat.comfort, Baggage.handling, Online.boarding, Inflight.service, satisfaction))
+# Now to build a forest using the new mtry parameter
+tic()
+set.seed(42)
+model.random.mtry <- randomForest(x = train.full[,-22], y = train.full[,22], na.action = na.omit, ntree=250,
+                             keep.forest = FALSE, importance = TRUE, mtry = 13)
+toc()
+print("*** model.random.mtry ***")
+model.random.mtry # Accuracy = 3.8%
+importance(model.random.mtry)
+title(main = "Full Training Set: mtry=13")
+varImpPlot(model.random.mtry)
+plot(model.random.mtry)
 
-model.random.top8 <- randomForest(satisfaction~., data = data_top8, na.action = na.omit, keep.forest = FALSE, importance = TRUE)
-Print("*** model.random.top8 ***")
-model.random.top8 # Accuracy =  
-importance(model.random.top8)
-varImpPlot(model.random.top8)
 
-#####
-# Plant a random forest with the mod data. 0's imputed with the mode and Arrival delay removed
-model.random.mod <- randomForest(satisfaction~., data = data_mod, na.action = na.omit, keep.forest = FALSE, importance = TRUE)
-Print("*** model.random.mod ***")
-model.random.mod  # accuracy = 3.89%
-importance(model.random.mod)
-varImpPlot(model.random.mod)
+# Choose factors with an importance greater of 60
+# Online.boarding, Checkin.service, Inflight.wifi.service, Type.of.Travel,
+# Baggage.handling, Seat.comfort
+# 
+factors <- c("Online.boarding", "Checkin.service", "Inflight.wifi.service", 
+             "Type.of.Travel", "Baggage.handling", "Seat.comfort")
+tic()
+model.random.final<- randomForest(x = train.full[,-22], y = train.full[,22], ntree = 250)
+toc() # 7.5 seconds
+model.random.final
 
-# Let's check the accuracy of the top 12 indicators
-data_mod_top12 <- data_mod %>%
-    select(c(Inflight.wifi.service,Checkin.service,Type.of.Travel,Seat.comfort,Baggage.handling,Customer.Type,
-             Online.boarding,Inflight.service,Cleanliness,Age,On.board.service,Inflight.entertainment,satisfaction))
+pred <- predict(model.random.mtry, newdata =  test, type = "response")
+forest_acc(model.random.other)
 
-model.random.modtop12 <- randomForest(satisfaction~., data = data_mod_top12, na.action = na.omit, keep.forest = FALSE, importance = TRUE)
-Print("*** model.random.modtop12 ***")
-model.random.modtop12 # Accuracy = 4.41%
-importance(model.random.modtop12)
-varImpPlot(model.random.modtop12)
-
-# Let's try the top 8
-data_mod_top8 <- data_mod %>%
-    select(c(Inflight.wifi.service,Checkin.service,Type.of.Travel,Seat.comfort,Baggage.handling,Customer.Type,
-             Seat.comfort, Baggage.handling, Online.boarding, Inflight.service, satisfaction))
-
-model.random.modtop8 <- randomForest(satisfaction~., data = data_mod_top8, na.action = na.omit, keep.forest = FALSE, importance = TRUE)
-Print("*** model.random.modtop8 ***")
-model.random.modtop8 # Accuracy = 5.65%    
-importance(model.random.modtop8)
-varImpPlot(model.random.modtop8)
+# Build a function to check model accuracy against the test data set
+forest_acc <- function(model){
+    # Predict model against the test set
+    predict <- predict(model, test, type = "class")
+    # predict <- predict(test,model)
+    # Find accuracy of the model on the test data set
+    acc <- mean(predict == test$satisfaction)
+    print(paste0("Full training set model accuracy: ", round(acc,4)))
+}
