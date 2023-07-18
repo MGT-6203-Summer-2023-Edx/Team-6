@@ -1,10 +1,8 @@
-setwd("C:/Users/ripun/OneDrive/Desktop/Raaji/GaTech/MGT 6203 - Data Analytics in Business/Project/Dataset")
-
 library(dplyr)
 library(reshape)
 library(ggplot2)
 
-data = read.csv("train.csv",header = TRUE, stringsAsFactors = TRUE) %>%
+data = read.csv("Data/kaggle_aps/train.csv",header = TRUE, stringsAsFactors = TRUE) %>%
   select(-X,-id) %>%
   mutate(Age = as.numeric(Age),
          Flight.Distance = as.numeric(log(Flight.Distance)),
@@ -31,16 +29,13 @@ cor_mod = melt(correlation)
 
 ggplot(data = cor_mod, aes(x = X1,y = X2, fill=value)) +
   geom_tile(color= "white") +
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, 
-                                   size = 9, hjust = 1)) +
-  scale_fill_gradient2(low = "blue", high = "red", mid = "gray", 
-                       midpoint = 0, limit = c(-1,1), space = "Lab", 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, size = 9, hjust = 1)) +
+  scale_fill_gradient2(low = "blue", high = "red", mid = "gray", midpoint = 0, limit = c(-1,1), space = "Lab", 
                        name="Correlation",guide = guide_colorbar(barheight = 4)) +
   coord_fixed() +
   geom_text(aes(X2, X1, label = value), color = "black", size = 3) +
   labs(title = "Heatmap") +
   theme(axis.title.x = element_blank(), axis.title.y = element_blank())
-
 
 #since arrival and departure delays are highly correlated, arrival delay column is dropped without removing blank rows
 data_mod = data[,c(1:21,23)]
@@ -52,9 +47,8 @@ for(i in 9:ncol(data_mod)-2){
   cat("\n")
 }
 
-#Almost all the variables has 0s. Only Departure.Arrival.time.convenient has slight more than 5% of the data.
-#Since the data is ordinal, imputing 0s with mode
-#function for mode
+#Almost all the variables has 0s. Only Departure.Arrival.time.convenient has slight more than 5% of the data. Since the data is ordinal, imputing 0s with mode.
+#writing a function for mode
 getmode = function(values){
   uniquev = unique(values)
   uniquev[which.max(tabulate(match(values,uniquev)))]
@@ -95,10 +89,8 @@ cat_corr = data.frame(cat1,cat2,corr)
 library(ggplot2)
 ggplot(cat_corr,aes(x=cat1,y=cat2,fill=corr)) +
   geom_tile() +
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, 
-                                   size = 9, hjust = 1)) +
-  scale_fill_gradient2(mid="#FBFEF9",low="#0C6291",high="#A63446", 
-                       midpoint = 0, limit = c(-1,1), space = "Lab", 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, size = 9, hjust = 1)) +
+  scale_fill_gradient2(mid="#FBFEF9",low="#0C6291",high="#A63446", midpoint = 0, limit = c(-1,1), space = "Lab", 
                        name="Correlation",guide = guide_colorbar(barheight = 4)) +
   geom_text(aes(label = round(corr,2)), color = "black", size = 2.3) +
   labs(title = "Heatmap for Categorical variables") +
@@ -138,8 +130,7 @@ inflightService = plot(data_mod$Inflight.service,"Inflight.service")
 clean = plot(data_mod$Cleanliness,"Cleanliness")
 
 library(ggpubr)
-ggarrange(gender,custType,age,travelType,class,wifi,depArrConvenience,onlinebooking,gate,
-          food,onlineBoarding,seat,entertainment,onboard,legroom,baggage,checkin,
+ggarrange(gender,custType,age,travelType,class,wifi,depArrConvenience,onlinebooking,gate,food,onlineBoarding,seat,entertainment,onboard,legroom,baggage,checkin,
           inflightService,clean,ncol=4,nrow=5)
 
 age_custtype = ggplot(data_mod, aes(x=Age,fill=Customer.Type)) +
@@ -210,18 +201,17 @@ boxplot(data_mod$Departure.Delay.in.Minutes)
 boxplot(sqrt(data_mod$Departure.Delay.in.Minutes))
 boxplot(log(data_mod$Departure.Delay.in.Minutes+1))
 
-#Both flight distance and departure delay do not assume normal distribution even after 
-#transformations and box plot shows lots of data as outliers except for the log transformed data.
-#Hence, based on our group’s judgement, we decided to apply log transformation to both variables
-
+#Both flight distance and departure delay do not assume normal distribution even after transformations and box plot shows lots of data as outliers except for 
+#the log transformed data. Hence, based on our group’s judgement, we decided to apply log transformation to both variables
 data_mod$Departure.Delay.in.Minutes = data_mod$Departure.Delay.in.Minutes+1
 data_mod$Departure.Delay.in.Minutes = log(data_mod$Departure.Delay.in.Minutes)
 data_mod$Flight.Distance = log(data_mod$Flight.Distance)
 
+#As per the box plots, Flight distance doesn't have any outliers after transformation but departure delay has.
 
-#Flight distance doesn't have any outliers after transformation but departure delay has
-#z-score is effective method if the data is normally distributed which is not the case with our data. Hence, choosing
-#IQR method to check and remove outliers.
+#All the above transformations are simplied in a function in the "Preprocessor" file. It has the code for log transformations, imputation and data split to train and valid
+#We pulled the data from that function and checked for outliers in the train set
+#The z-score is effective method if the data is normally distributed which is not the case with our data. Hence, choosing IQR method to check and remove outliers.
 data_all = preprocess()
 train = data_all$train
 Q1 = quantile(train$Departure.Delay.in.Minutes,.25)
