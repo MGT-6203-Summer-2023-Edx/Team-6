@@ -2,17 +2,18 @@ library(ggplot2)
 library(ggfortify)
 library(tidyverse)
 library(ROCR)
+library(glue)
 #library(gridExtra)
 source(file = "Code/preprocessor.R")
 
 
 is_ksvm <- function(model) {
-    return( "ksvm" %in% class(model) )
+    return("ksvm" %in% class(model))
 }
 
 is_logit <- function(model) {
     model_class <- class(model)
-    if ( "glm" %in% model_class && "family" %in% names(model)) {
+    if ("glm" %in% model_class && "family" %in% names(model)) {
         if (model$family$family == "binomial") {
             return(TRUE)
         }
@@ -22,18 +23,21 @@ is_logit <- function(model) {
 
 
 .get_rocr_predictions <- function(.data, model, target) {
+   # .data=1; model=m;target = "satisfaction";
     if (is_ksvm(model)) {
-        .data$preds <- predict(model, type = "probabilities")
-        .ROCR <- .data[(.data), c("preds", target)]
+        .data$preds <- predict(model, .data, type = "probabilities")[,2]
+        .ROCR <- .data[, c("preds", target)]
+        .ROCR.preds <- prediction(.ROCR$preds, .ROCR[target])
     } else if (is_logit(model)) {
         .data$preds <- predict(model, .data, type = "response")
         .ROCR <- .data[complete.cases(.data), c("preds", target)]
+        .ROCR.preds <- prediction(.ROCR$preds, .ROCR[target])
     } else {
-        stop("Invalid model type. Model must be a glm logit or svm.")
+        stop(glue("Invalid model type. Model must be a glm logit or svm, not {class(model)}."))
     }
     
+    
 
-    .ROCR.preds <- prediction(.ROCR$preds, .ROCR[target])
     return(.ROCR.preds)
 }
 get_auc <- function(.data, model, target = "satisfaction") {
@@ -46,6 +50,7 @@ plot_roc_auc_curve <-
              model,
              target = "satisfaction",
              title = "ROC Curve") {
+        #.data=train.sample; model=m;target = "satisfaction"; title = "ROC Curve"
         .ROCR.preds <-  .get_rocr_predictions(.data, model, target)
         .ROCR.perf.roc.curve <-
             performance(.ROCR.preds, "tpr", "fpr")
@@ -61,24 +66,51 @@ plot_roc_auc_curve <-
                     label = paste("AUC:", round(.ROCR.auc, 3)),
                     fill = "white"
                 ) +
-                ggtitle(title,)
+                ggtitle(title, )
         )
     }
 
-
-
-
-# 
-# # Read and wrangle
-# preprocessed <- preprocess()
-# 
+# preprocessed = preprocess()
 # train <- preprocessed$train
 # validate <- preprocessed$validate
 # 
+# n <- dim(train)[1]
+# set.seed(42)
+# train.sample <- train[sample(1:n, 10000, replace = F),]
 # 
+# library(kernlab)
+# m <-
+#     ksvm(
+#         x = satisfaction ~ .,
+#         data = train.sample,
+#         type = 'C-svc',
+#         kernel = "vanilladot",
+#         C = .01,
+#         scaled = T,
+#         prob.model = T
+#     )
+# .data <- train.sample
+# .data$preds <- predict(model, .data, type = "probabilities")[,2]
+# .ROCR <- .data[, c("preds", target)]
+# .ROCR.preds <- prediction(.ROCR$preds, .ROCR[target])
+# 
+# plot_roc_auc_curve(train.sample, m, title = "Training Sample")
+# 
+# plot_roc_auc_curve(train, m, title = "Training Full")
+# plot_roc_auc_curve(validate, m, title = "Validation Set")
+
+
+#
+# # Read and wrangle
+# preprocessed <- preprocess()
+#
+# train <- preprocessed$train
+# validate <- preprocessed$validate
+#
+#
 # # Train Logit
 # m <- train %>% glm(satisfaction ~ ., "binomial", .)
-# 
+#
 # # add a column for probability predictions
 # plot_roc_auc_curve(train, m)
 # p.train <- plot_roc_auc_curve(
