@@ -1,6 +1,14 @@
+#This function splits the data into a training and validation set
+#and cleans the data. 
+#This function is called by our models and makes it so that
+#our models are using the exact same data with the exact same transormations.
+
+
 #rm(list = ls())
 library(tidyverse)
 
+#Function to get the mode of "values"
+#We will replace N/A or blank data with the mode
 getmode <-  function(values) {
     uniquev = unique(values)
     uniquev[which.max(tabulate(match(values, uniquev)))]
@@ -9,7 +17,8 @@ getmode <-  function(values) {
 
 
 preprocess <- function() {
-    
+    set.seed(42)
+    #training data is ~100,000 rows
     train_validate <- read.csv("Data/kaggle_aps/train.csv", header = T, stringsAsFactors = T) %>%
         
         #dropping id and arrival delay columns
@@ -24,11 +33,12 @@ preprocess <- function() {
                 c("train", "validation"),
                 n(),
                 replace = T,
-                prob = c(.7, .3)
+                prob = c(.75, .25) #final split is 60/20/20 train/val/test. Note that test data is in separate file
             ),
-            satisfaction = ifelse(satisfaction == "satisfied", 1, 0)
+            satisfaction = as.factor(ifelse(satisfaction == "satisfied", 1, 0))
         )
     
+    #test data is ~25,000 rows
     test <- read.csv("Data/kaggle_aps/test.csv", header = T, stringsAsFactors = T) %>%
         
         #dropping id and arrival delay columns
@@ -41,16 +51,17 @@ preprocess <- function() {
             Departure.Delay.in.Minutes = log(1 + as.numeric(Departure.Delay.in.Minutes)),
             across(7:20, as.factor),
             fold = "test",
-            satisfaction = ifelse(satisfaction == "satisfied", 1, 0)
+            satisfaction = as.factor(ifelse(satisfaction == "satisfied", 1, 0))
         )
     
-    
+    #calculate the mode for each likert scale feature (likert scale is integers 0 - 5)
+    #note only train (not validation) data is used to calculate the mode
     likerts <- colnames(train_validate[, 7:20])
     modes <- train_validate %>%
         filter(fold == "train") %>%
         summarise(across(all_of(likerts), getmode))
     
-    
+    #replace all "0" values with the corresponding mode
     for (col.name in likerts) {
         train_validate[which(train_validate[col.name] == 0), col.name] <-
             modes[[1, col.name]]

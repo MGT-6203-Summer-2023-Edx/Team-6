@@ -20,7 +20,8 @@ for (cost in c(.1, 1, 10)) {
              type='C-svc',
              kernel = "vanilladot",
              C = cost,
-             scaled = T
+             scaled = T,
+             prob.model=T
          )
     cat("c:",
         cost,
@@ -32,16 +33,18 @@ for (cost in c(.1, 1, 10)) {
     costs[[paste("c=", cost)]] <- m
 }
 set.seed(42)
-train.sample <- train[sample(1:n, 50000, replace = F), ]
+train.sample <- train[sample(1:n, 10000, replace = F), ]
 
-for (cost in c(1:100, seq(100, 1000,10))) {
+for (cost in c(1:9, seq(10, 90, 10), seq(100, 900, 100))) {
     m <-
         ksvm(x=satisfaction ~ .,
              data=train.sample,
              type='C-svc',
              kernel = "vanilladot",
              C = cost,
-             scaled = T
+             scaled = T,
+             prob.model=T
+                
         )
     cat("c:",
         cost,
