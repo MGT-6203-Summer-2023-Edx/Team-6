@@ -17,7 +17,7 @@ getmode <-  function(values) {
 
 
 preprocess <- function() {
-    
+    set.seed(42)
     #training data is ~100,000 rows
     train_validate <- read.csv("Data/kaggle_aps/train.csv", header = T, stringsAsFactors = T) %>%
         
