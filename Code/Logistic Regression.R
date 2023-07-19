@@ -55,16 +55,25 @@ accuracy = function(data_acc){
 accuracy_train = accuracy(train)
 cat("Training accuracy is",accuracy_train)
 
-#roc curve
-library(ROCR)
-predictions <- prediction(as.numeric(predict(model, train,type="response")), as.numeric(train$satisfaction))
-roc <- performance(predictions,"tpr", "fpr")
-plot(roc,main="ROC curve for GLM model")
+#function for ROC curve
+roc = function(data_roc,title){
+  predictions <- prediction(as.numeric(predict(model, data_roc,type="response")), as.numeric(data_roc$satisfaction))
+  roc <- performance(predictions,"tpr", "fpr")
+  plot(roc,main=title)
+  auc <- performance(predictions, measure = "auc")
+  auc <- auc@y.values[[1]]
+  return(auc)
+}
 
-#area under the curve
-auc <- performance(predictions, measure = "auc")
-auc <- auc@y.values[[1]]
-cat("Area under the Curve is",auc)
+#training accuracy
+accuracy_train = accuracy(train)
+cat("Training accuracy is",accuracy_train)
+
+#roc curve for train set
+library(ROCR)
+auc_train = roc(train,"ROC curve of glm model for training set")
+cat("Area under the Curve for training set is",auc_train)
+
 
 #adding the dummy columns to validation set to check the model's accuracy
 columns_names = colnames(valid)
@@ -74,3 +83,7 @@ valid = fastDummies::dummy_cols(valid,select_columns = columns)
 #validation set accuracy
 accuracy_valid = accuracy(valid)
 cat("Validation accuracy is",accuracy_valid)
+
+#roc curve for validation set
+auc_valid = roc(valid,"ROC curve of glm model for validation set")
+cat("Area under the Curve for validation set is",auc_valid)
