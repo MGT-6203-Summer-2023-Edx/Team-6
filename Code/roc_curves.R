@@ -14,6 +14,11 @@ is_rfc <- function(model) {
     return("randomForest" == class(model))
 }
 
+is_decision_tree <- function(model) {
+    return("rpart" == class(model))
+}
+
+
 is_logit <- function(model) {
     model_class <- class(model)
     if ("glm" %in% model_class && "family" %in% names(model)) {
@@ -23,6 +28,7 @@ is_logit <- function(model) {
     }
     return(FALSE)
 }
+
 .get_ksvm_preds <- function(.data, model, target) {
     if (class(.data) != "data.frame") stop("First arg to .get_ksvm_preds is not a data.frame")
     .data$preds <- predict(model, .data, type = "probabilities")[,2]
@@ -44,7 +50,13 @@ is_logit <- function(model) {
     .ROCR.preds <- prediction(.ROCR$preds, .ROCR[target])
     return(.ROCR.preds)
 }
-
+.get_decision_tree_preds <- function(.data, model, target) {
+    if (class(.data) != "data.frame") stop("First arg to .get_rfc_preds is not a data.frame")
+    .data$preds <- predict(model, .data, type = "prob")[,2]
+    .ROCR <- .data[complete.cases(.data), c("preds", target)]
+    .ROCR.preds <- prediction(.ROCR$preds, .ROCR[target])
+    return(.ROCR.preds)
+}
 .get_rocr_predictions <- function(.data, model, target) {
    # .data=1; model=m;target = "satisfaction";
     if (is_ksvm(model)) {
@@ -53,6 +65,9 @@ is_logit <- function(model) {
         .ROCR.preds <- .get_logit_preds(.data, model, target)
         
     }else if (is_rfc(model)) {
+        .ROCR.preds <- .get_rfc_preds(.data, model, target)
+        
+    }else if (is_decision_tree(model)) {
         .ROCR.preds <- .get_rfc_preds(.data, model, target)
         
     } else {
@@ -106,9 +121,11 @@ plot_roc_auc_curve <-
   n <- dim(train)[1]
   set.seed(42)
   train.sample <- train[sample(1:n, 10000, replace = F),]
-  source(file = "Code/preprocessor.R")
+
 
   library(kernlab)
+  library(randomForest)
+  library(rpart)
   # m.svm <-
   #     ksvm(
   #         x = satisfaction ~ .,
@@ -122,13 +139,14 @@ plot_roc_auc_curve <-
   .data <- train.sample
   factors <- c("Online.boarding", "Checkin.service", "Inflight.wifi.service", 
                "Type.of.Travel", "Baggage.handling", "Seat.comfort")
-
+  m.rpart <- rpart(satisfaction~., data = train, method = "class")
   m.rfc <-  randomForest(x = train[,factors], y = train[,22], ntree = 250)
-  #m.logit <- train %>% glm(satisfaction ~ ., "binomial", .)
-  plot_roc_auc_curve(train, m.rfc, title = "RFC Test")
+  m.logit <- train %>% glm(satisfaction ~ ., "binomial", .)
+  plot_roc_auc_curve(validate, m.rfc, title = "RFC Test")
+  plot_roc_auc_curve(validate, m.rpart, title = "Decision Tree Test")
   
-  #plot_roc_auc_curve(train.sample, m.svm, title = "SVM Test")
-  #plot_roc_auc_curve(train, m.logit, title = "Logit Test")
+  lot_roc_auc_curve(train.sample, m.svm, title = "SVM Test")
+  plot_roc_auc_curve(train, m.logit, title = "Logit Test")
   
 }
 
