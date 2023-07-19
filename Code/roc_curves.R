@@ -96,16 +96,18 @@ plot_roc_auc_curve <-
         .ROCR.perf.auc <- performance(.ROCR.preds, "auc")
         .ROCR.auc <- get_auc(.data, model, target = "satisfaction")
         theme_update(plot.title = element_text(hjust = 0.5))
+        theme_set(theme_bw(10))
+        
         return(
             autoplot(.ROCR.perf.roc.curve) +
                 annotate(
                     geom = "label",
-                    x = .90,
+                    x = .85,
                     y = .10,
                     label = paste("AUC:", round(.ROCR.auc, 3)),
                     fill = "white"
-                ) +
-                ggtitle(title, )
+                ) + 
+                ggtitle(title )
         )
     }
 
@@ -140,16 +142,18 @@ plot_roc_auc_curve <-
   factors <- c("Online.boarding", "Checkin.service", "Inflight.wifi.service", 
                "Type.of.Travel", "Baggage.handling", "Seat.comfort")
   m.rpart <- rpart(satisfaction~., data = train, method = "class")
-  m.rfc <-  randomForest(x = train[,factors], y = train[,22], ntree = 250)
-  m.logit <- train %>% glm(satisfaction ~ ., "binomial", .)
-  plot_roc_auc_curve(validate, m.rfc, title = "RFC Test")
   plot_roc_auc_curve(validate, m.rpart, title = "Decision Tree Test")
   
-  lot_roc_auc_curve(train.sample, m.svm, title = "SVM Test")
-  plot_roc_auc_curve(train, m.logit, title = "Logit Test")
+  # m.rfc <-  randomForest(x = train[,factors], y = train[,22], ntree = 250)
+  # m.logit <- train %>% glm(satisfaction ~ ., "binomial", .)
+  # plot_roc_auc_curve(validate, m.rfc, title = "RFC Test")
+  # plot_roc_auc_curve(validate, m.rpart, title = "Decision Tree Test")
+  # 
+  # plot_roc_auc_curve(train.sample, m.svm, title = "SVM Test")
+  # plot_roc_auc_curve(train, m.logit, title = "Logit Test")
   
 }
-
+.test_curves()
 
 # g <- grid.arrange(p.train, p.validate, ncol = 2)
 # g

@@ -60,7 +60,7 @@ cat("Training accuracy is",accuracy_train)
 roc = function(data_roc,title){
   predictions <- prediction(as.numeric(predict(model, data_roc,type="response")), as.numeric(data_roc$satisfaction))
   roc <- performance(predictions,"tpr", "fpr")
-  plot(roc,main=title)
+  plot(roc, main=title)
   auc <- performance(predictions, measure = "auc")
   auc <- auc@y.values[[1]]
   return(auc)
