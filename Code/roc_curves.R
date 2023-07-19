@@ -10,6 +10,10 @@ is_ksvm <- function(model) {
     return("ksvm" %in% class(model))
 }
 
+is_rfc <- function(model) {
+    return("randomForest" == class(model))
+}
+
 is_logit <- function(model) {
     model_class <- class(model)
     if ("glm" %in% model_class && "family" %in% names(model)) {
@@ -33,6 +37,13 @@ is_logit <- function(model) {
     .ROCR.preds <- prediction(.ROCR$preds, .ROCR[target])
     return(.ROCR.preds)
 }
+.get_rfc_preds <- function(.data, model, target) {
+    if (class(.data) != "data.frame") stop("First arg to .get_rfc_preds is not a data.frame")
+    .data$preds <- predict(model, .data, type = "prob")[,2]
+    .ROCR <- .data[complete.cases(.data), c("preds", target)]
+    .ROCR.preds <- prediction(.ROCR$preds, .ROCR[target])
+    return(.ROCR.preds)
+}
 
 .get_rocr_predictions <- function(.data, model, target) {
    # .data=1; model=m;target = "satisfaction";
@@ -40,7 +51,10 @@ is_logit <- function(model) {
         .ROCR.preds <-  .get_ksvm_preds(.data, model, target)
     } else if (is_logit(model)) {
         .ROCR.preds <- .get_logit_preds(.data, model, target)
-
+        
+    }else if (is_rfc(model)) {
+        .ROCR.preds <- .get_rfc_preds(.data, model, target)
+        
     } else {
         stop(glue("Invalid model type. Model must be a glm logit or svm, not {class(model)}."))
     }
@@ -61,7 +75,7 @@ plot_roc_auc_curve <-
              title = "ROC Curve") {
         if (class(.data) != "data.frame") stop("First arg to plot_roc_auc_curve is not a data.frame")
         .ROCR.preds <-  .get_rocr_predictions(.data, model, target)
-        .ROCR.preds <-  .get_rocr_predictions(.data, model, target)
+
         .ROCR.perf.roc.curve <-
             performance(.ROCR.preds, "tpr", "fpr")
         .ROCR.perf.auc <- performance(.ROCR.preds, "auc")
@@ -95,21 +109,27 @@ plot_roc_auc_curve <-
   source(file = "Code/preprocessor.R")
 
   library(kernlab)
-  m.svm <-
-      ksvm(
-          x = satisfaction ~ .,
-          data = train.sample,
-          type = 'C-svc',
-          kernel = "vanilladot",
-          C = .01,
-          scaled = T,
-          prob.model = T
-      )
+  # m.svm <-
+  #     ksvm(
+  #         x = satisfaction ~ .,
+  #         data = train.sample,
+  #         type = 'C-svc',
+  #         kernel = "vanilladot",
+  #         C = .01,
+  #         scaled = T,
+  #         prob.model = T
+  #     )
   .data <- train.sample
+  factors <- c("Online.boarding", "Checkin.service", "Inflight.wifi.service", 
+               "Type.of.Travel", "Baggage.handling", "Seat.comfort")
+
+  m.rfc <-  randomForest(x = train[,factors], y = train[,22], ntree = 250)
+  #m.logit <- train %>% glm(satisfaction ~ ., "binomial", .)
+  plot_roc_auc_curve(train, m.rfc, title = "RFC Test")
   
-  m.logit <- train %>% glm(satisfaction ~ ., "binomial", .)
-  plot_roc_auc_curve(train.sample, m.svm, title = "SVM Test")
-  plot_roc_auc_curve(train, m.logit, title = "Logit Test")
+  #plot_roc_auc_curve(train.sample, m.svm, title = "SVM Test")
+  #plot_roc_auc_curve(train, m.logit, title = "Logit Test")
+  
 }
 
 
