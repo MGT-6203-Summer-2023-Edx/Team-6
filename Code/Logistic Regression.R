@@ -89,7 +89,7 @@ cat("Validation accuracy is",accuracy_valid)
 auc_valid = roc(valid,"ROC curve of glm model for validation set")
 cat("Area under the Curve for validation set is",auc_valid)
 
-stargazer::stargazer(model, type="html",out = "Visualizations/final_model.html", single.row = T, no.space=T, summary=F, omit.table.layout ="=") %>% htmlTable::htmlTable()
+stargazer::stargazer(model, type="html",out = "Visualizations/final_model.html", single.row = T, no.space=T, summary=F, style = "all2") %>% htmlTable::htmlTable()
 library(car)
 var.inflation <- vif(model )
 stargazer::stargazer(var.inflation, type="html",out = "Visualizations/variance_inflation_factors.html", summary=F) %>% htmlTable::htmlTable()
