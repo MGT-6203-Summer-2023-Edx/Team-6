@@ -9,6 +9,7 @@
 - Ryan Chandler (zujin87)
 - Alejandro Martinez (amzeta)
 
+
 ## Directory Structure
 
 The project directory is organized as follows:
