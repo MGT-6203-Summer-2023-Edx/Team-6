@@ -98,7 +98,7 @@ ggplot(cat_corr,aes(x=cat1,y=cat2,fill=corr)) +
   theme(axis.title.x = element_blank(), axis.title.y = element_blank())
 
 #plots for categorical variables
-plot = function(variable,xlabel){
+cat_plot = function(variable,xlabel){
   ggplot(data_mod, aes(x=variable,fill=satisfaction)) +
     geom_histogram(stat="count",position = "identity",alpha=0.5) +
     xlab(xlabel)
@@ -112,23 +112,23 @@ travelType = ggplot(data_mod, aes(x=Type.of.Travel,fill=satisfaction)) +
   geom_histogram(stat="count",position = "identity",alpha=0.5)+
   scale_x_discrete(labels=c("Business","Personal"))
 
-gender = plot(data_mod$Gender,"Gender")
-age = plot(data_mod$Age,"Age")
-class = plot(data_mod$Class,"Class")
-wifi = plot(data_mod$Inflight.wifi.service,"Inflight.wifi.service")
-depArrConvenience = plot(data_mod$Departure.Arrival.time.convenient,"Departure.Arrival.time.convenient")
-onlinebooking = plot(data_mod$Ease.of.Online.booking,"Ease.of.Online.booking")
-gate = plot(data_mod$Gate.location,"Gate.location")
-food = plot(data_mod$Food.and.drink,"Food.and.drink")
-onlineBoarding = plot(data_mod$Online.boarding,"Online.boarding")
-seat = plot(data_mod$Seat.comfort,"Seat.comfort")
-entertainment = plot(data_mod$Inflight.entertainment,"Inflight.entertainment")
-onboard = plot(data_mod$On.board.service,"On.board.service")
-legroom = plot(data_mod$Leg.room.service,"Leg.room.service")
-baggage = plot(data_mod$Baggage.handling,"Baggage.handling")
-checkin = plot(data_mod$Checkin.service,"Checkin.service")
-inflightService = plot(data_mod$Inflight.service,"Inflight.service")
-clean = plot(data_mod$Cleanliness,"Cleanliness")
+gender = cat_plot(data_mod$Gender,"Gender")
+age = cat_plot(data_mod$Age,"Age")
+class = cat_plot(data_mod$Class,"Class")
+wifi = cat_plot(data_mod$Inflight.wifi.service,"Inflight.wifi.service")
+depArrConvenience = cat_plot(data_mod$Departure.Arrival.time.convenient,"Departure.Arrival.time.convenient")
+onlinebooking = cat_plot(data_mod$Ease.of.Online.booking,"Ease.of.Online.booking")
+gate = cat_plot(data_mod$Gate.location,"Gate.location")
+food = cat_plot(data_mod$Food.and.drink,"Food.and.drink")
+onlineBoarding = cat_plot(data_mod$Online.boarding,"Online.boarding")
+seat = cat_plot(data_mod$Seat.comfort,"Seat.comfort")
+entertainment = cat_plot(data_mod$Inflight.entertainment,"Inflight.entertainment")
+onboard = cat_plot(data_mod$On.board.service,"On.board.service")
+legroom = cat_plot(data_mod$Leg.room.service,"Leg.room.service")
+baggage = cat_plot(data_mod$Baggage.handling,"Baggage.handling")
+checkin = cat_plot(data_mod$Checkin.service,"Checkin.service")
+inflightService = cat_plot(data_mod$Inflight.service,"Inflight.service")
+clean = cat_plot(data_mod$Cleanliness,"Cleanliness")
 
 library(ggpubr)
 ggarrange(gender,custType,age,travelType,class,wifi,depArrConvenience,onlinebooking,gate,food,onlineBoarding,seat,entertainment,onboard,legroom,baggage,checkin,
