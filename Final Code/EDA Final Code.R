@@ -2,7 +2,8 @@ library(dplyr)
 library(reshape)
 library(ggplot2)
 if(basename(getwd())=="Final Code"){setwd("..") }
-data = read.csv("Data/kaggle_aps/train.csv",header = TRUE, stringsAsFactors = TRUE) %>%
+file_id = "1H3Qk_68U7a3-M6ctAHIii3LEfGChz7EZ"
+data <- read.csv(sprintf("https://docs.google.com/uc?id=%s&export=download", file_id), header = T, stringsAsFactors = T) %>%
   select(-X,-id) %>%
   mutate(Age = as.numeric(Age),
          Flight.Distance = as.numeric(log(Flight.Distance)),
