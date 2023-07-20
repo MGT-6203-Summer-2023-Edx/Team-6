@@ -51,7 +51,9 @@ Finally, upon selecting the most suitable model, we interpreted its predictions 
 
 **Overview of data sets**
 
-Our primary data set is taken from surveys from a US airline and is publicly available on Kaggle (see details in 7. Work cited and reference). It includes user ratings for multiple aspects of air travel, such as food and drink and seat comfort, as well as customer information, such as age and gender. It contains 24 features (see details in Appendix 1) and is made of 2 different files of 103,904 (train.csv) and 25,976 records (test.csv).
+Datasets are hosted on Google Drive, accessible through this [link](https://drive.google.com/drive/folders/1i76FItono3U5ceE9Qc41XzybLqQZdXys?usp=sharing)
+
+Our primary data set is taken from surveys from a US airline and is publicly available on Kaggle. It includes user ratings for multiple aspects of air travel, such as food and drink and seat comfort, as well as customer information, such as age and gender. It contains 24 features (see details in Appendix 1) and is made of 2 different files of 103,904 (train.csv) and 25,976 records (test.csv).
 
 We initially intended to use other sources of data in relation to the business problem, but after in-depth analyses, we concluded that i) merging with our primary data set was impossible, or ii) conducting a parallel analysis of customer satisfaction was not feasible for the identified data sets:
 
