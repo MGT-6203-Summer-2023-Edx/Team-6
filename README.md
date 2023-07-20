@@ -39,6 +39,21 @@ The `Final Code` folder contains the fully developed R scripts that were used fo
 
 Please note that these scripts in the `Final Code` folder work on preprocessed data after running `preprocessor.R`.
 
+**Required Packages for Running Scripts:**
+
+To execute the provided R scripts, make sure to have the following packages installed in your R environment:
+- `tidyverse`
+- `fastDummies`
+- `scales`
+- `ggplot2`
+- `ggfortify`
+- `ROCR`
+- `glue`
+- `kernlab`
+- `rpart`
+- `randomForest`
+- `car`
+
 ## Objective/ Problem statement
 
 We intend to use airline passenger satisfaction survey data to determine which factors drive customer satisfaction (or dissatisfaction) so that we can provide actionable recommendations on how money should be invested or re-allocated to keep passengers satisfied. Customer satisfaction is a key factor in attracting and retaining business.
