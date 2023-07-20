@@ -13,51 +13,31 @@
 
 The project directory is organized as follows:
 
-1. **Code:** This folder contains various R scripts used for data preprocessing, modeling, and evaluation.
-
-2. **Data:** This folder holds the datasets used in the project. It includes files like `train.csv`, `validate.csv`, and `test.csv`.
-
-3. **Final Code:** This folder contains the final version of the R code for the project. It includes scripts like `EDA Final Code.R`, `Logistic Regression.R`, `decision_tree.R`, `forest_models.R`, `preprocessor.R`, `response_distribution_by_factor_vars.R`, `roc_curves.R`, `summary_stats_continuous_and_likert.R`, and `svm.R`.
-
-4. **Final Presentation Slides:** The presentation slides used for the final project presentation are stored here.
-
-5. **Final Report:** The final written report summarizing the project, including findings and results.
-
-6. **Other Resources:** This folder includes additional resources related to the project.
-
-7. **Progress Report:** Progress report files that track the team's development and achievements throughout the project.
-
-8. **Project Proposal:** Proposal documents detailing the project's scope, objectives, and methodology.
-
-9. **Proposal Presentation:** Presentation slides used for the project proposal.
-
-10. **Visualizations:** Contains images and visualizations used in the project.
+1. **Data:** This folder holds a link to the datasets used in the project
+2. **Final Code:** This folder contains the final version of the R code for the project. It includes scripts like  `preprocessor.R`, `EDA Final Code.R`, `Logistic Regression.R`, `decision_tree.R`, `forest_models.R`,  `svm.R`, `response_distribution_by_factor_vars.R`, `roc_curves.R`, `summary_stats_continuous_and_likert.R`.
+3. **Final Presentation Slides:** The presentation slides used for the final project presentation are stored here.
+4. **Final Report:** The final written report summarizing the project, including findings and results.
+5. **Code:** This folder contains various work in progress R scripts used for data preprocessing, modeling, and evaluation.
+8. **Other Resources:** This folder includes additional resources related to the project, such as research papers.
+9. **Progress Report:** Progress report files that track the team's development and achievements throughout the project.
+10. **Project Proposal:** Proposal documents detailing the project's scope, objectives, and methodology.
+11. **Proposal Presentation:** Presentation slides used for the project proposal.
+12. **Visualizations:** Contains images and visualizations used in the project.
 
 ## Final Code
 
 The `Final Code` folder contains the fully developed R scripts that were used for Exploratory Data Analysis (EDA), data preprocessing, and building machine learning models for the project. Below are the key scripts available in this folder:
+1. **`preprocessor.R`:** This script is for data preprocessing tasks, such as cleaning the data and preparing it for modeling.
+2. **`EDA Final Code.R`:** This script focuses on exploratory data analysis tasks and may include data visualization and descriptive statistics.
+3. **`response_distribution_by_factor_vars.R`:** The script may focus on analyzing the distribution of the response variable (satisfaction) across factor variables.
+4. **`summary_stats_continuous_and_likert.R`:** The script may involve calculating summary statistics for continuous and Likert-scale variables.
+5. **`Logistic Regression.R`:** The script is dedicated to building a logistic regression model for customer satisfaction prediction.
+6. **`decision_tree.R`:** This script involves building a decision tree model for the classification task.
+7. **`forest_models.R`:** The script contains code for building forest models, possibly using the Random Forest algorithm.
+10. **`svm.R`:** This script focuses on building a Support Vector Machine (SVM) model using the `kernlab` package. It includes the selection of hyperparameters and plotting the ROC curve to evaluate model performance.
+11. **`roc_curves.R`:** This script is dedicated to generating ROC curves and calculating AUC for different models. It includes functions for plotting ROC curves and calculating AUC metrics.
 
-1. **`EDA Final Code.R`:** This script focuses on exploratory data analysis tasks and may include data visualization and descriptive statistics.
-
-2. **`Logistic Regression.R`:** The script is dedicated to building a logistic regression model for customer satisfaction prediction.
-
-3. **`decision_tree.R`:** This script involves building a decision tree model for the classification task.
-
-4. **`forest_models.R`:** The script contains code for building forest models, possibly using the Random Forest algorithm.
-
-5. **`preprocessor.R`:** This script is for data preprocessing tasks, such as cleaning the data and preparing it for modeling.
-
-6. **`response_distribution_by_factor_vars.R`:** The script may focus on analyzing the distribution of the response variable (satisfaction) across factor variables.
-
-7. **`roc_curves.R`:** This script is dedicated to generating ROC curves and calculating AUC for different models. It includes functions for plotting ROC curves and calculating AUC metrics.
-
-8. **`summary_stats_continuous_and_likert.R`:** The script may involve calculating summary statistics for continuous and Likert-scale variables.
-
-9. **`svm.R`:** This script focuses on building a Support Vector Machine (SVM) model using the `kernlab` package. It includes the selection of hyperparameters and plotting the ROC curve to evaluate model performance.
-
-Please note that these scripts in the `Final Code` folder work on preprocessed data.
-
-## Introduction/Background/Motivation
+Please note that these scripts in the `Final Code` folder work on preprocessed data after running the script `preprocessor.R`.
 
 ## Objective/ Problem statement
 
