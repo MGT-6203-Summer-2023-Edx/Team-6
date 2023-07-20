@@ -19,7 +19,8 @@ if(basename(getwd())=="Final Code"){setwd("..")}
 preprocess <- function() {
     set.seed(42)
     #training data is ~100,000 rows
-    train_validate <- read.csv("Data/kaggle_aps/train.csv", header = T, stringsAsFactors = T) %>%
+    file_id = "1H3Qk_68U7a3-M6ctAHIii3LEfGChz7EZ"
+    train_validate <- read.csv(sprintf("https://docs.google.com/uc?id=%s&export=download", file_id), header = T, stringsAsFactors = T) %>%
         
         #dropping id and arrival delay columns
         dplyr::select(-X, -id, -Arrival.Delay.in.Minutes) %>%
@@ -39,7 +40,8 @@ preprocess <- function() {
         )
     
     #test data is ~25,000 rows
-    test <- read.csv("Data/kaggle_aps/test.csv", header = T, stringsAsFactors = T) %>%
+    test_file_id = "1IF78CMjRwtlotSUxrMexKS9Zmxa0GTzw"
+    test <- read.csv(sprintf("https://docs.google.com/uc?id=%s&export=download", test_file_id), header = T, stringsAsFactors = T) %>%
         
         #dropping id and arrival delay columns
         dplyr::select(-X, -id, -Arrival.Delay.in.Minutes) %>%

@@ -4,7 +4,8 @@ library(fastDummies)
 library(htmlTable)
 library(scales)
 
-df.factors <- read.csv("Data/kaggle_aps/train.csv",
+file_id = "1H3Qk_68U7a3-M6ctAHIii3LEfGChz7EZ"
+df.factors <- read.csv(sprintf("https://docs.google.com/uc?id=%s&export=download", file_id),
          header = T, 
          stringsAsFactors = F, 
          row.names = "X") %>% 
