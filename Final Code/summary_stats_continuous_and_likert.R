@@ -1,5 +1,6 @@
 library(tidyverse)
 library(stargazer)
+if(basename(getwd())=="Final Code"){setwd('..')}
 read.csv("Data/kaggle_aps/train.csv",
          header = T, 
          stringsAsFactors = F, 
