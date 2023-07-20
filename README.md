@@ -13,12 +13,12 @@
 
 The project directory is organized as follows:
 
-1. **Code:** This folder contains various work in progress R scripts used for data preprocessing, modeling, and evaluation; please use scripts located in the Final Code folder.
-2. **Data:** This folder holds a link to the datasets used in the project
+1. **Code:** This folder contains various R scripts used for data preprocessing, modeling, and evaluation. These are not the final scripts, please use scripts in located the Final Code folder.
+2. **Data:** This folder holds a link to the datasets used in the project.
 3. **Final Code:** This folder contains the final version of the R code for the project. It includes scripts like  `preprocessor.R`, `EDA Final Code.R`, `Logistic Regression.R`, `decision_tree.R`, `forest_models.R`,  `svm.R`, `response_distribution_by_factor_vars.R`, `roc_curves.R`, `summary_stats_continuous_and_likert.R`.
 4. **Final Presentation Slides:** The presentation slides used for the final project presentation are stored here.
-5. **Final Report:** The final written report summarizing the project, including findings and results.
-8. **Other Resources:** This folder includes additional resources related to the project, such as research papers.
+5. **Final Report:** The final written report summarizing the project, findings and results.
+8. **Other Resources:** This folder includes additional resources related to the project, such as research articles.
 9. **Progress Report:** Progress report files that track the team's development and achievements throughout the project.
 10. **Project Proposal:** Proposal documents detailing the project's scope, objectives, and methodology.
 11. **Proposal Presentation:** Presentation slides used for the project proposal.
@@ -26,15 +26,15 @@ The project directory is organized as follows:
 
 ## Final Code
 
-The `Final Code` folder contains the fully developed R scripts that were used for Exploratory Data Analysis (EDA), data preprocessing, and building machine learning models for the project. Below are the key scripts available in this folder:
-1. **`preprocessor.R`:** This script is for data preprocessing tasks, such as cleaning the data and preparing it for modeling.
-2. **`EDA Final Code.R`:** This script focuses on exploratory data analysis tasks and include data visualization.
-3. **`response_distribution_by_factor_vars.R`:** The script focus on analyzing the distribution of the response variable (satisfaction) across factor variables.
+The `Final Code` folder contains the final R scripts that were used for Exploratory Data Analysis (EDA), data preprocessing, and building models for the project:
+1. **`preprocessor.R`:** This script is for data preprocessing tasks, including cleaning the data and preparing it for modeling.
+2. **`EDA Final Code.R`:** This script focuses on exploratory data analysis tasks and includes data visualizations.
+3. **`response_distribution_by_factor_vars.R`:** The script focuses on analyzing the distribution of the response variable (satisfaction) across variables.
 4. **`summary_stats_continuous_and_likert.R`:** The script involve calculating summary statistics for continuous and Likert-scale variables.
-5. **`Logistic Regression.R`:** The script is dedicated to building logistic regression models for customer satisfaction prediction.
-6. **`decision_tree.R`:** This script focuses on building decision tree models for the classification task.
-7. **`forest_models.R`:** The script contains code for building forest models using the Random Forest algorithm.
-10. **`svm.R`:** This script focuses on building Support Vector Machine (SVM) models using the `kernlab` package and selects hyperparameters and plotting the ROC curve to evaluate model performance.
+5. **`Logistic Regression.R`:** The script is dedicated to building logistic regression models.
+6. **`decision_tree.R`:** This script focuses on building decision tree models.
+7. **`forest_models.R`:** The script contains code for building random forest models.
+10. **`svm.R`:** This script focuses on building Support Vector Machine (SVM) models.
 11. **`roc_curves.R`:** This script is dedicated to generating ROC curves and calculating AUC for different models.
 
 Please note that these scripts in the `Final Code` folder work on preprocessed data after running `preprocessor.R`.
@@ -85,10 +85,7 @@ Thirdly, throughout the analysis, we interpreted the results of each model, exam
 
 Finally, upon selecting the most suitable model, we interpreted its predictions and drew conclusions regarding the factors contributing to passenger satisfaction. We considered the overall model performance and the importance of different features in influencing satisfaction levels. By following this methodology (detailed in Appendix 4), we aimed to gain a comprehensive understanding of the data set, select the most appropriate model, interpret its results, and draw meaningful conclusions about the factors affecting air passenger satisfaction.
 
-
 ## Overview of data
-
-**Overview of data sets**
 
 Datasets are hosted on Google Drive, accessible through this [link](https://drive.google.com/drive/folders/1i76FItono3U5ceE9Qc41XzybLqQZdXys?usp=sharing).
 
