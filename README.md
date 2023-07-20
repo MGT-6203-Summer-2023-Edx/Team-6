@@ -46,7 +46,10 @@ To execute the provided R scripts, make sure to have the following packages inst
 - `tidyverse`
 - `fastDummies`
 - `scales`
+- `dplyr`
+- `reshape`
 - `ggplot2`
+- `ggpubr`
 - `ggfortify`
 - `ROCR`
 - `glue`
