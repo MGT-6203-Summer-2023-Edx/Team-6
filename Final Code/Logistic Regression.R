@@ -1,8 +1,9 @@
-source("Code/preprocessor.R")
+if(basename(getwd())=="Team-6"){setwd("Final Code")}
+source("preprocessor.R")
 data = preprocess()
 train = data$train
 valid = data$validate
-
+test = data$test
 #forward selection to check the order of importance of variables
 model_all = glm(satisfaction~.,data=train, family = binomial(link = "logit"))
 model_intercept = glm(satisfaction~1,data=train, family = binomial(link = "logit"))
