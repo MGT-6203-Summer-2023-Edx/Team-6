@@ -13,7 +13,7 @@
 
 ## Objective/ Problem statement
 
-We intend to use airline passenger satisfaction survey data to determine which factors drive customer satisfaction (or dissatisfaction) so that we can provide actionable recommendations on how money should be invested or re-allocated to keep passengers satisfied. Customer satisfaction is a key factor in attracting and retaining business. Identifying factors that have the strongest effect on customer satisfaction will provide key insights for airlines to enhance their services, improve the customer experience, and optimize business operations.
+We intend to use airline passenger satisfaction survey data to determine which factors drive customer satisfaction (or dissatisfaction) so that we can provide actionable recommendations on how money should be invested or re-allocated to keep passengers satisfied. Customer satisfaction is a key factor in attracting and retaining business.
 
 ## Business Justification/ Impact
 
@@ -24,11 +24,7 @@ The airline industry has undergone significant changes with the emergence of hyb
 
 ## Research questions
 
-Our primary research question (RQ) was: What are the most important factors in ensuring that an airline passenger is satisfied? Other supporting research questions were:
-- Does grouping variables by category (demographics, in-flight service quality, timeliness, and delays) provide additional insight?
-- Can we predict airline passenger satisfaction based on a limited set of factors?
-- Do characteristics that would imply a higher level of service (business class) result in higher levels of satisfaction?
-- Are there any noteworthy interactions that would affect the probability of a satisfied customer?
+Our primary research question (RQ) was: What are the most important factors in ensuring that an airline passenger is satisfied? Other supporting research questions are detailed in the final report.
 
 ## Hypotheses
 
