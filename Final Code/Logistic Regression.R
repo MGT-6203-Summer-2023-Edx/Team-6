@@ -89,6 +89,19 @@ cat("Validation accuracy is",accuracy_valid)
 auc_valid = roc(valid,"ROC curve of glm model for validation set")
 cat("Area under the Curve for validation set is",auc_valid)
 
+#adding the dummy columns to test set to check the model's accuracy
+columns_names = colnames(test)
+columns = columns_names[c(1:2,4:5,7:20)]
+test = fastDummies::dummy_cols(test,select_columns = columns)
+
+#test set accuracy
+accuracy_test = accuracy(test)
+cat("test accuracy is",accuracy_test)
+
+#roc curve for test set
+auc_test = roc(test,"ROC curve of glm model for test set")
+cat("Area under the Curve for test set is",auc_test)
+
 stargazer::stargazer(model, type="html",out = "Visualizations/final_model.html", single.row = T, no.space=T, summary=F, style = "all2") %>% htmlTable::htmlTable()
 library(car)
 var.inflation <- vif(model)
