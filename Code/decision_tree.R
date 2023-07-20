@@ -4,18 +4,17 @@ rm(list = ls())   # Clear all the variables and data
 # Clear all plots
 try(dev.off(dev.list()["RStudioGD"]),silent=TRUE)
 try(dev.off(),silent=TRUE)
-if(basename(getwd())=="Team-6"){setwd("Final Code/") }
+
 
 source("Final Code/preprocessor.R")
 #source("Code/preprocessor_test.R")
-source("Final Code/roc_curves.R")
+source("Code/roc_curves.R")
 library(kernlab)
 library(tidyverse)
 library(rpart)
 library(rpart.plot)
 library(rattle)     # Used for fancyRpartPlot
 
-data <- preprocess()
 # Get the data
 train <- data$train
 val <- data$validate
@@ -23,10 +22,8 @@ test <- data$test
 str(train)
 str(val)
 # Since rpart performs cross-validation, we need to stick the train and validation data sets back together
-#train.full <- rbind(train, val)
-#str(train.full)
-
-
+train.full <- rbind(train, val)
+str(train.full)
 
 model.rpart <- NULL
 # Build a decision tree function
@@ -48,14 +45,14 @@ decision_tree <- function(dataset){
 # Build a function to check model accuracy against the test data set
 decision_tree_acc <- function(model){
     # Predict model against the test set
-    predict <- predict(model, val, type = "class")
+    predict <- predict(model, train.full, type = "class")
     # Find accuracy of the model on the test data set
-    acc <- mean(predict == val$satisfaction)
+    acc <- mean(predict == train.full$satisfaction)
     print(paste0("Full training set model accuracy: ", round(acc,4)))
 }
 
 # Build decision tree for each data set
-model.train <- decision_tree(train)
+model.train.full <- decision_tree(train.full)
 # Data set data information/notes
 # Top Factors: Online.boarding, Inflight.wifi.service, Type.of.Travel
 # rel error xerror
@@ -66,29 +63,29 @@ model.train <- decision_tree(train)
 # 5    0.7093 0.7093
 
 # Check the accuracy of the model against the test data set
-decision_tree_acc(model.train)
+decision_tree_acc(model.train.full)
 # Model notes: Accuracy is 0.8729. Could potentially prune the model slightly with little impact
 # on accuracy.
 
-
 # Prune the tree since bottom split really doesn't add much to our model
 # Pruning the model reduces the accuracy from 87.3% to 86.2%
-model.train.prune <- prune(model.train, cp = 0.03)
-decision_tree_acc(model.train.prune)
-fancyRpartPlot(model.train.prune, main = paste0("Pruned Decision Tree"), cex = 0.7, caption = "")
+model.train.full.prune <- prune(model.train.full, cp = 0.03)
+decision_tree_acc(model.train.full.prune)
+fancyRpartPlot(model.train.full.prune, main = paste0("Pruned Decision Tree"), cex = 0.7, caption = "")
 
-plot_roc_auc_curve(val, model.train.prune, title = "Pruned Decision Tree")
+plot_roc_auc_curve(val, model.train.full.prune, title = "Pruned Decision Tree")
+
 
 # Since Type.of.travel is such an important factor, let's explore that factor more
 # Break the data into the different classes for exploration
-train.type_business <- train %>% filter(Type.of.Travel == "Business travel")
-train.type_personal <- train %>% filter(Type.of.Travel == "Personal Travel")
+train.full.type_business <- train.full %>% filter(Type.of.Travel == "Business travel")
+train.full.type_personal <- train.full %>% filter(Type.of.Travel == "Personal Travel")
 
 # How many of each type of traveler
-nrow(train.type_business)  # 71,655
-nrow(train.type_personal)  # 32,249
+nrow(train.full.type_business)  # 71,655
+nrow(train.full.type_personal)  # 32,249
 
-model.train.type_business <- decision_tree(train.type_business)
+model.train.full.type_business <- decision_tree(train.full.type_business)
 # Data set data.type_business information/notes
 # Top Factors: Online.boarding, Inflight.wifi, Inflight.entertainment
 # This could be pruned back to 4 splits
@@ -100,18 +97,18 @@ model.train.type_business <- decision_tree(train.type_business)
 # 5    0.7334 0.7334
 
 # Check the accuracy of the model against the test data set
-decision_tree_acc(model.train.type_business)
+decision_tree_acc(model.train.full.type_business)
 # Model Notes: Accuracy is 0.7621. Based on the rsq plot, the model could be trimmed back
 # several splits with minimal impact. Might be worth it if we want to use this model to
 # explain to people what is going on.
 
 # Pruning for the type_business model
-model.train.type_business.prune <- prune(model.train.type_business, cp = 0.018)
-fancyRpartPlot(model.train.type_business.prune, main = paste0("Pruned Decision Tree for Type_Business"), cex = 0.7, caption = "")
-decision_tree_acc(model.train.type_business.prune) # 74.3%
+model.train.full.type_business.prune <- prune(model.train.full.type_business, cp = 0.018)
+fancyRpartPlot(model.train.full.type_business.prune, main = paste0("Pruned Decision Tree for Type_Business"), cex = 0.7, caption = "")
+decision_tree_acc(model.train.full.type_business.prune) # 74.3%
 
 
-model.train.type_pesonal <- decision_tree(train.type_personal)
+model.train.full.type_pesonal <- decision_tree(train.full.type_personal)
 # Data set data.type_personal information/notes
 # Top Factors: Online.boarding, Inflight.wifi.service
 #   rel error xerror
@@ -121,23 +118,23 @@ model.train.type_pesonal <- decision_tree(train.type_personal)
 
 
 # For personal travel, it seems that inflight wifi and online boarding are important
-decision_tree_acc(model.train.type_pesonal)
+decision_tree_acc(model.train.full.type_pesonal)
 # Model Notes: Accuracy is 0.6847. This model could be heavily pruned.
 
 
 # Models based on class
-train.class_business <- train %>% filter(Class == "Business")
-train.class_eco <- train %>% filter(Class == "Eco")
-train.class_eco_plus <- train %>% filter(Class == "Eco Plus")
+train.full.class_business <- train.full %>% filter(Class == "Business")
+train.full.class_eco <- train.full %>% filter(Class == "Eco")
+train.full.class_eco_plus <- train.full %>% filter(Class == "Eco Plus")
 
 # Build the models
-model.train.class_business <- decision_tree(train.class_business)
-model.train.class_eco <- decision_tree(train.class_eco)
-model.train.class_eco_plus<- decision_tree(train.class_eco_plus)
+model.train.full.class_business <- decision_tree(train.full.class_business)
+model.train.full.class_eco <- decision_tree(train.full.class_eco)
+model.train.full.class_eco_plus<- decision_tree(train.full.class_eco_plus)
 # Notes: The models all show in flight WiFi and entertainment along with online boarding 
 # among the top factors. On the business class, we see Comfort for the first time rising
 # to being an important factor.
-model.train.class_business.prune <- prune(model.train.class_business, cp = 0.018)
-fancyRpartPlot(model.train.class_business.prune, main = paste0("Pruned Decision Tree for Class_Business"), cex = 0.7, caption = "")
+model.train.full.class_business.prune <- prune(model.train.full.class_business, cp = 0.018)
+fancyRpartPlot(model.train.full.class_business.prune, main = paste0("Pruned Decision Tree for Class_Business"), cex = 0.6, caption = "")
 
 
