@@ -4,10 +4,10 @@ rm(list = ls())   # Clear all the variables and data
 # Clear all plots
 try(dev.off(dev.list()["RStudioGD"]),silent=TRUE)
 try(dev.off(),silent=TRUE)
+if(basename(getwd())=="Team-6"){setwd("Final Code/") }
 
-
-source("Code/preprocessor.R")
-source("Code/preprocessor_test.R")
+source("preprocessor.R")
+#source("Code/preprocessor_test.R")
 #source("Code/roc_curves.R")
 library(kernlab)
 library(tidyverse)
@@ -15,6 +15,7 @@ library(rpart)
 library(rpart.plot)
 library(rattle)     # Used for fancyRpartPlot
 
+data <- preprocess()
 # Get the data
 train <- data$train
 val <- data$validate

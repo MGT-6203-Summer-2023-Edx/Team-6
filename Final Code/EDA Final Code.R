@@ -1,7 +1,7 @@
 library(dplyr)
 library(reshape)
 library(ggplot2)
-
+if(basename(getwd())=="Final Code"){setwd("..") }
 data = read.csv("Data/kaggle_aps/train.csv",header = TRUE, stringsAsFactors = TRUE) %>%
   select(-X,-id) %>%
   mutate(Age = as.numeric(Age),
@@ -212,6 +212,8 @@ data_mod$Flight.Distance = log(data_mod$Flight.Distance)
 #All the above transformations are simplied in a function in the "Preprocessor" file. It has the code for log transformations, imputation and data split to train and valid
 #We pulled the data from that function and checked for outliers in the train set
 #The z-score is effective method if the data is normally distributed which is not the case with our data. Hence, choosing IQR method to check and remove outliers.
+if(basename(getwd())=="Team-6"){setwd("Final Code/") }
+source("preprocessor.R")
 data_all = preprocess()
 train = data_all$train
 Q1 = quantile(train$Departure.Delay.in.Minutes,.25)

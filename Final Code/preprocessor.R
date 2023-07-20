@@ -15,14 +15,14 @@ getmode <-  function(values) {
 }
 
 
-
+if(basename(getwd())=="Final Code"){setwd("..")}
 preprocess <- function() {
     set.seed(42)
     #training data is ~100,000 rows
     train_validate <- read.csv("Data/kaggle_aps/train.csv", header = T, stringsAsFactors = T) %>%
         
         #dropping id and arrival delay columns
-        select(-X, -id, -Arrival.Delay.in.Minutes) %>%
+        dplyr::select(-X, -id, -Arrival.Delay.in.Minutes) %>%
         # Define numerics, transform lognormal variables.
         mutate(
             Age = as.numeric(Age),
@@ -42,7 +42,7 @@ preprocess <- function() {
     test <- read.csv("Data/kaggle_aps/test.csv", header = T, stringsAsFactors = T) %>%
         
         #dropping id and arrival delay columns
-        select(-X, -id, -Arrival.Delay.in.Minutes) %>%
+        dplyr::select(-X, -id, -Arrival.Delay.in.Minutes) %>%
         
         # Define numerics, transform lognormal variables.
         mutate(
@@ -73,15 +73,15 @@ preprocess <- function() {
         train = train_validate %>%
             filter(fold == "train") %>%
             mutate(across(7:20, droplevels)) %>% 
-            select(-fold),
+            dplyr::select(-fold),
         validate = train_validate %>%
             filter(fold == "validation") %>%
             mutate(across(7:20, droplevels)) %>% 
-            select(-fold),
+            dplyr::select(-fold),
         test = test %>%
             filter(fold == "test") %>%
             mutate(across(7:20, droplevels)) %>% 
-            select(-fold)
+            dplyr::select(-fold)
     )
     return(preproc)
 }

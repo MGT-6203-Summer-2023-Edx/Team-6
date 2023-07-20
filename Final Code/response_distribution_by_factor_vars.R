@@ -3,7 +3,7 @@ library(stargazer)
 library(fastDummies)
 library(htmlTable)
 library(scales)
-
+if(basename(getwd())=="Final Code"){setwd("..")}
 df.factors <- read.csv("Data/kaggle_aps/train.csv",
          header = T, 
          stringsAsFactors = F, 

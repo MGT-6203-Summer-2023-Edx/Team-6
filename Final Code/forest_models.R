@@ -5,16 +5,16 @@ rm(list = ls())   # Clear all the variables and data
 # Clear all plots
 try(dev.off(dev.list()["RStudioGD"]),silent=TRUE)
 try(dev.off(),silent=TRUE)
-
-source("Code/preprocessor.R")
-source("Code/preprocessor_test.R")
+if(basename(getwd())=="Team-6"){setwd("Final Code/") }
+source("preprocessor.R")
+#source("preprocessor_test.R")
 #source("Code/decision_tree.R")
 #library(tidyverse)
 library(randomForest)
 library(ROCR)
 #library(caret)
 library(tictoc)
-
+data <- preprocess()
 # Get our data loaded up
 train <- data$train
 val <- data$validate
