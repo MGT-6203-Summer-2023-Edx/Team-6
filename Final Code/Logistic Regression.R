@@ -53,10 +53,6 @@ accuracy = function(data_acc){
   return(acc)
 }
 
-#training accuracy
-accuracy_train = accuracy(train)
-cat("Training accuracy is",accuracy_train)
-
 #function for ROC curve
 roc = function(data_roc,title){
   predictions <- prediction(as.numeric(predict(model, data_roc,type="response")), as.numeric(data_roc$satisfaction))
