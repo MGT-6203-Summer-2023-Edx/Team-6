@@ -21,15 +21,6 @@ columns = columns_names[c(1:2,4:5,7:20)]
 train = fastDummies::dummy_cols(train,select_columns = columns)
 head(train)
 
-#running the model again after removing insignificant variables
-model = glm(satisfaction~Gender_Female+Customer.Type+Age+Type.of.Travel+Class+Inflight.wifi.service+Departure.Arrival.time.convenient_1+
-              Departure.Arrival.time.convenient_3+Departure.Arrival.time.convenient_4+Departure.Arrival.time.convenient_5+
-              Ease.of.Online.booking+Gate.location+Food.and.drink_1+Food.and.drink_2+Online.boarding+Seat.comfort+Inflight.entertainment+On.board.service_1+
-              On.board.service_3+On.board.service_4+On.board.service_5+Leg.room.service_1+Leg.room.service_4+Leg.room.service_5+Baggage.handling+
-              Checkin.service+Inflight.service+Cleanliness_1+Cleanliness_3+Cleanliness_4+Cleanliness_5+Departure.Delay.in.Minutes, 
-              data=train, family = binomial(link = "logit"))
-summary(model)
-
 #running the model again after removing insignificant variables from the above model
 model = glm(satisfaction~Customer.Type+Age+Type.of.Travel+Class+Inflight.wifi.service+Departure.Arrival.time.convenient_3+Departure.Arrival.time.convenient_4+
               Departure.Arrival.time.convenient_5+Ease.of.Online.booking+Gate.location+Food.and.drink_2+Online.boarding+
